@@ -29,7 +29,7 @@ export async function onRequestPost(context) {
   }
 
   const confirmUrl = `https://volasec.com/confirm?token=${token}`;
-console.log("RESEND KEY EXISTS:", !!env.RESEND_API_KEY);
+console.log("RESEND KEY EXISTS:", !!env.RESEND_API_KEY); 
   try {
     const resendRes = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -54,6 +54,7 @@ console.log("RESEND KEY EXISTS:", !!env.RESEND_API_KEY);
       headers: { "Content-Type": "application/json" },
     });
   } catch (err) {
+    console.log("RESEND KEY EXISTS:", !!env.RESEND_API_KEY); 
     return new Response(JSON.stringify({ error: "Email failed" }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
