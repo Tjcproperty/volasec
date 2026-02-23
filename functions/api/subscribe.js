@@ -1,4 +1,3 @@
-
 // ======= Helpers ======
 function validateEmail(email) {
   const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -16,20 +15,42 @@ function escapeHtml(str) {
 
 // ======= API Handler =======
 export async function onRequestPost(context) {
-    console.log("🔥 subscribe function running");
   const { request, env } = context;
+  console.log("🔥 subscribe function running");
 
-  const { email, token } = await request.json();
+  let data;
+  try {
+    data = await request.json();
+  } catch (e) {
+    console.log("❌ Invalid JSON body:", e);
+    return new Response(JSON.stringify({ error: "Invalid JSON body" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  const { email, token } = data;
 
   if (!email || !token) {
+    console.log("❌ Missing email or token");
     return new Response(JSON.stringify({ error: "Missing email or token" }), {
       status: 400,
       headers: { "Content-Type": "application/json" },
     });
   }
 
+  if (!validateEmail(email)) {
+    console.log("❌ Invalid email format:", email);
+    return new Response(JSON.stringify({ error: "Invalid email format" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  console.log("RESEND KEY EXISTS:", !!env.RESEND_API_KEY);
+
   const confirmUrl = `https://volasec.com/confirm?token=${token}`;
-console.log("RESEND KEY EXISTS:", !!env.RESEND_API_KEY); 
+
   try {
     const resendRes = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -41,12 +62,19 @@ console.log("RESEND KEY EXISTS:", !!env.RESEND_API_KEY);
         from: "Volasec <contact@volasec.com>",
         to: email,
         subject: "Confirm your subscription — Volasec",
-        html: `<a href="${confirmUrl}">Confirm Subscription</a>`,
+        html: confirmationEmailHtml,
       }),
     });
 
+    const text = await resendRes.text();
+    console.log("Resend API response status:", resendRes.status);
+    console.log("Resend API response body:", text);
+
     if (!resendRes.ok) {
-      throw new Error("Resend API failed");
+      return new Response(
+        JSON.stringify({ error: "Resend API failed", details: text }),
+        { status: 500, headers: { "Content-Type": "application/json" } },
+      );
     }
 
     return new Response(JSON.stringify({ success: true }), {
@@ -54,11 +82,11 @@ console.log("RESEND KEY EXISTS:", !!env.RESEND_API_KEY);
       headers: { "Content-Type": "application/json" },
     });
   } catch (err) {
-    console.log("RESEND KEY EXISTS:", !!env.RESEND_API_KEY); 
-    return new Response(JSON.stringify({ error: "Email failed", err }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    console.log("❌ Fetch error:", err);
+    return new Response(
+      JSON.stringify({ error: "Email failed", details: err.message }),
+      { status: 500, headers: { "Content-Type": "application/json" } },
+    );
   }
 }
 
