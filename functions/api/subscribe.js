@@ -55,7 +55,7 @@ export async function onRequestPost(context) {
     const resendRes = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${env.RESEND_API_KEY}`,
+        Authorization: `Bearer re_V75vLcmW_52aokHatnsCapMAb6qCqz6Js`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
