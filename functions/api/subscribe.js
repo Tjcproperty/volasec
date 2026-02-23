@@ -29,7 +29,7 @@ export async function onRequestPost(context) {
   }
 
   const confirmUrl = `https://volasec.com/confirm?token=${token}`;
-
+console.log("RESEND KEY EXISTS:", !!env.RESEND_API_KEY);
   try {
     const resendRes = await fetch("https://api.resend.com/emails", {
       method: "POST",
