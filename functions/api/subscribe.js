@@ -38,7 +38,7 @@ export async function onRequestPost(context) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "Volasec <newsletter@volasec.com>",
+        from: "Volasec <contact@volasec.com>",
         to: email,
         subject: "Confirm your subscription — Volasec",
         html: `<a href="${confirmUrl}">Confirm Subscription</a>`,
