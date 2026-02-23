@@ -55,14 +55,14 @@ export async function onRequestPost(context) {
     const resendRes = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
-        Authorization: `Bearer re_V75vLcmW_52aokHatnsCapMAb6qCqz6Js`,
+        Authorization: `Bearer ${env.RESEND_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
         from: "Volasec <contact@volasec.com>",
         to: email,
         subject: "Confirm your subscription — Volasec",
-        html: confirmationEmailHtml,
+        html: confirmationEmailHtml({ confirmUrl }), // ← CALL the function here
       }),
     });
 
