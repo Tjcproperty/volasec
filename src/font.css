@@ -1,0 +1,127 @@
+/* Archivo Expanded Font Family */
+
+@font-face {
+  font-family: 'Archivo Expanded';
+  src: url('/fonts/Archivo_Expanded-Thin.ttf') format('truetype');
+  font-weight: 100;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Archivo Expanded';
+  src: url('/fonts/Archivo_Expanded-ThinItalic.ttf') format('truetype');
+  font-weight: 100;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Archivo Expanded';
+  src: url('/fonts/Archivo_Expanded-ExtraLight.ttf') format('truetype');
+  font-weight: 200;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Archivo Expanded';
+  src: url('/fonts/Archivo_Expanded-ExtraLightItalic.ttf') format('truetype');
+  font-weight: 200;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Archivo Expanded';
+  src: url('/fonts/Archivo_Expanded-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Archivo Expanded';
+  src: url('/fonts/Archivo_Expanded-LightItalic.ttf') format('truetype');
+  font-weight: 300;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Archivo Expanded';
+  src: url('/fonts/Archivo_Expanded-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Archivo Expanded';
+  src: url('/fonts/Archivo_Expanded-Italic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Archivo Expanded';
+  src: url('/fonts/Archivo_Expanded-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Archivo Expanded';
+  src: url('/fonts/Archivo_Expanded-MediumItalic.ttf') format('truetype');
+  font-weight: 500;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Archivo Expanded';
+  src: url('/fonts/Archivo_Expanded-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Archivo Expanded';
+  src: url('/fonts/Archivo_Expanded-SemiBoldItalic.ttf') format('truetype');
+  font-weight: 600;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Archivo Expanded';
+  src: url('/fonts/Archivo_Expanded-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Archivo Expanded';
+  src: url('/fonts/Archivo_Expanded-BoldItalic.ttf') format('truetype');
+  font-weight: 700;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Archivo Expanded';
+  src: url('/fonts/Archivo_Expanded-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Archivo Expanded';
+  src: url('/fonts/Archivo_Expanded-ExtraBoldItalic.ttf') format('truetype');
+  font-weight: 800;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Archivo Expanded';
+  src: url('/fonts/Archivo_Expanded-Black.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Archivo Expanded';
+  src: url('/fonts/Archivo_Expanded-BlackItalic.ttf') format('truetype');
+  font-weight: 900;
+  font-style: italic;
+}
