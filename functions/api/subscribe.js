@@ -55,7 +55,7 @@ console.log("RESEND KEY EXISTS:", !!env.RESEND_API_KEY);
     });
   } catch (err) {
     console.log("RESEND KEY EXISTS:", !!env.RESEND_API_KEY); 
-    return new Response(JSON.stringify({ error: "Email failed" }), {
+    return new Response(JSON.stringify({ error: "Email failed", err }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });
