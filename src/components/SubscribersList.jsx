@@ -9,6 +9,8 @@ export default function SubscribersList() {
   const [subscribers, setSubscribers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [limit, setLimit] = useState("");
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all"); // all / confirmed / pending
 
   const fetchSubscribers = async () => {
     setLoading(true);
@@ -42,8 +44,21 @@ export default function SubscribersList() {
     fetchSubscribers();
   }, []);
 
+  // Filtered subscribers based on search and status
+  const filteredSubscribers = subscribers.filter((sub) => {
+    const matchesSearch =
+      sub.email.toLowerCase().includes(search.toLowerCase()) ||
+      sub.source.toLowerCase().includes(search.toLowerCase());
+    const matchesStatus =
+      statusFilter === "all" ||
+      (statusFilter === "confirmed" && sub.confirmed) ||
+      (statusFilter === "pending" && !sub.confirmed);
+
+    return matchesSearch && matchesStatus;
+  });
+
   return (
-    <div className="relative p-8  pt-20 min-h-screen bg-secondary/5">
+    <div className="relative p-8 pt-20 min-h-screen bg-secondary/5">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center mb-12 gap-6">
         <div>
@@ -53,12 +68,12 @@ export default function SubscribersList() {
           <h1 className="text-4xl font-extrabold text-dark flex items-center gap-3">
             Subscribers
             <span className="inline-flex items-center justify-center text-sm font-semibold bg-primary/10 text-primary border border-primary/20 rounded-sm px-3 py-0.5">
-              {loading ? "…" : subscribers.length}
+              {loading ? "…" : filteredSubscribers.length}
             </span>
           </h1>
         </div>
 
-        <div className="flex gap-3">
+        <div className="flex gap-3 flex-wrap">
           <input
             type="number"
             placeholder="Limit"
@@ -72,6 +87,22 @@ export default function SubscribersList() {
           >
             Refresh
           </button>
+          <input
+            type="text"
+            placeholder="Search by email or source"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-52 px-4 py-2 bg-secondary border-2 border-primary-30 rounded-lg text-dark placeholder-dark/40 text-sm focus:outline-none focus:border-primary transition-all duration-300"
+          />
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="px-4 py-2 bg-secondary border-2 border-primary-30 rounded-lg text-dark text-sm focus:outline-none focus:border-primary transition-all duration-300"
+          >
+            <option value="all">All</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="pending">Pending</option>
+          </select>
         </div>
       </div>
 
@@ -84,12 +115,12 @@ export default function SubscribersList() {
           </svg>
           Loading subscribers…
         </div>
-      ) : subscribers.length === 0 ? (
+      ) : filteredSubscribers.length === 0 ? (
         <p className="text-dark/50 text-base mt-16">No subscribers found.</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <AnimatePresence>
-            {subscribers.map((sub, idx) => (
+            {filteredSubscribers.map((sub, idx) => (
               <motion.div
                 key={sub.email + idx}
                 initial={{ opacity: 0, y: 20 }}

@@ -92,9 +92,12 @@ export default function BulkNewsletter() {
   // Bulk send
   const handleSend = async () => {
     if (!customized) return alert("Enable 'Customized Newsletter' first!");
-    if (!title.trim() || !message.trim()) return alert("Title and message are required!");
+    if (!title.trim() || !message.trim())
+      return alert("Title and message are required!");
 
     setSending(true);
+
+    // Prepare subscriber emails with personalized HTML
     const emailsToSend = filteredSubscribers.map((sub) => ({
       email: sub.email,
       name: sub.name,
@@ -105,8 +108,13 @@ export default function BulkNewsletter() {
       const res = await fetch("/api/bulk-newsletter", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ subscribers: emailsToSend, title }),
+        body: JSON.stringify({
+          subscribers: emailsToSend,
+          title,
+          html: composeEmailHtml("Subscriber"), // ✅ top-level HTML required by your handler
+        }),
       });
+
       const data = await res.json();
       console.log("Bulk send result:", data);
       alert(`Newsletter sent to ${emailsToSend.length} subscribers!`);
@@ -117,11 +125,11 @@ export default function BulkNewsletter() {
       setSending(false);
     }
   };
-
   // Test send
   const handleSendTest = async () => {
     if (!testEmail.trim()) return alert("Enter a test email!");
-    if (!title.trim() || !message.trim()) return alert("Title and message are required!");
+    if (!title.trim() || !message.trim())
+      return alert("Title and message are required!");
 
     setSendingTest(true);
     try {
@@ -135,7 +143,9 @@ export default function BulkNewsletter() {
         }),
       });
       const data = await res.json();
-      alert(data.status === "sent" ? "Test email sent!" : `Failed: ${data.error}`);
+      alert(
+        data.status === "sent" ? "Test email sent!" : `Failed: ${data.error}`,
+      );
     } catch (err) {
       console.error(err);
       alert("Failed to send test email");
@@ -169,7 +179,9 @@ export default function BulkNewsletter() {
           <button
             key={f}
             className={`px-4 py-2 rounded-lg ${
-              filter === f ? "bg-primary text-white" : "bg-secondary border border-primary-30 text-dark"
+              filter === f
+                ? "bg-primary text-white"
+                : "bg-secondary border border-primary-30 text-dark"
             }`}
             onClick={() => setFilter(f)}
           >
@@ -179,13 +191,20 @@ export default function BulkNewsletter() {
       </div>
 
       <div className="mb-6 max-h-64 overflow-auto border border-primary-20 rounded-lg p-4 bg-secondary">
-        {filteredSubscribers.length === 0 && <p className="text-dark/50">No subscribers in this category.</p>}
+        {filteredSubscribers.length === 0 && (
+          <p className="text-dark/50">No subscribers in this category.</p>
+        )}
         {filteredSubscribers.map((sub) => (
-          <div key={sub.email} className="flex justify-between items-center mb-2 last:mb-0">
+          <div
+            key={sub.email}
+            className="flex justify-between items-center mb-2 last:mb-0"
+          >
             <span className="truncate">{sub.email}</span>
             <span
               className={`text-xs px-2 py-1 rounded-full ${
-                sub.confirmed ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"
+                sub.confirmed
+                  ? "bg-green-100 text-green-800"
+                  : "bg-yellow-100 text-yellow-800"
               }`}
             >
               {sub.confirmed ? "Confirmed" : "Pending"}
@@ -257,7 +276,9 @@ export default function BulkNewsletter() {
             />
             <button
               className={`px-4 py-2 rounded-lg font-semibold transition-colors duration-300 ${
-                sendingTest ? "bg-gray-400" : "bg-secondary border border-primary-30 text-dark hover:bg-primary/10"
+                sendingTest
+                  ? "bg-gray-400"
+                  : "bg-secondary border border-primary-30 text-dark hover:bg-primary/10"
               }`}
               onClick={handleSendTest}
               disabled={sendingTest}
@@ -278,7 +299,9 @@ export default function BulkNewsletter() {
 
           <button
             className={`px-6 py-3 rounded-lg font-semibold transition-colors duration-300 ${
-              sending ? "bg-gray-400" : "bg-primary text-white hover:bg-primary/80"
+              sending
+                ? "bg-gray-400"
+                : "bg-primary text-white hover:bg-primary/80"
             }`}
             onClick={handleSend}
             disabled={sending}
