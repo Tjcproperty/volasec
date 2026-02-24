@@ -1,4 +1,3 @@
-
 export async function onRequestPost(context) {
   const { request, env } = context;
 
@@ -90,25 +89,77 @@ function inboxEmailHtml({ name, email, company, message }) {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Volasec Contact Request</title>
-  <style>
-    body{margin:0;padding:0;background:#F1F2F2;font-family:Helvetica,Arial,sans-serif;color:#0C0C0C;}
-    table{border-collapse:collapse;}
-    img{display:block;border:0;outline:none;}
-    .wrap{width:100%;padding:24px 12px;}
-    .card{max-width:680px;margin:0 auto;background:#fff;border:1px solid rgba(14,26,43,.16);border-radius:18px;overflow:hidden;}
-    .head{padding:18px 22px;background:linear-gradient(180deg, rgba(12,12,12,.96), rgba(14,26,43,.92));border-bottom:1px solid rgba(241,242,242,.12);}
-    .pill{font-size:11px;letter-spacing:.18em;text-transform:uppercase;padding:8px 12px;border-radius:999px;border:1px solid rgba(241,242,242,.18);background:rgba(241,242,242,.06);color:#F1F2F2;white-space:nowrap;}
-    .p{padding:22px;}
-    .label{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:rgba(12,12,12,.58);margin-bottom:8px;}
-    .value{font-size:15px;line-height:1.65;color:#0C0C0C;}
-    .row{padding:14px 0;border-bottom:1px solid rgba(14,26,43,.10);}
-    .row:last-child{border-bottom:none;}
-    .msg{margin-top:10px;padding:16px;border-radius:14px;background:rgba(14,26,43,.04);border:1px solid rgba(14,26,43,.12);white-space:pre-wrap;}
-    .muted{color:rgba(12,12,12,.65);font-size:12px;line-height:1.6;}
-    .foot{padding:16px 22px;background:rgba(14,26,43,.03);border-top:1px solid rgba(14,26,43,.10);text-align:center;}
-    a{color:#0E1A2B;text-decoration:none;font-weight:700;}
-    @media (max-width:600px){ .p{padding:18px!important;} .pill{display:none!important;} }
-  </style>
+ <style>
+  body{
+    margin:0;
+    padding:0;
+    background:#0C0C0C;
+    font-family:Helvetica,Arial,sans-serif;
+    color:#F1F2F2;
+  }
+  table{border-collapse:collapse;}
+  img{display:block;border:0;outline:none;}
+  .wrap{width:100%;padding:24px 12px;}
+  .card{
+    max-width:680px;
+    margin:0 auto;
+    background:linear-gradient(180deg,#0C0C0C 0%,#0E1A2B 100%);
+    border:1px solid rgba(241,242,242,.08);
+    border-radius:18px;
+    overflow:hidden;
+  }
+  .head{
+    padding:18px 22px;
+    border-bottom:1px solid rgba(241,242,242,.08);
+  }
+  .pill{
+    font-size:11px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    padding:8px 12px;
+    border-radius:999px;
+    border:1px solid rgba(241,242,242,.18);
+    background:rgba(241,242,242,.06);
+    color:#F1F2F2;
+  }
+  .p{padding:22px;}
+  .label{
+    font-size:12px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:rgba(241,242,242,.45);
+    margin-bottom:8px;
+  }
+  .value{
+    font-size:15px;
+    line-height:1.65;
+    color:#F1F2F2;
+  }
+  .row{
+    padding:14px 0;
+    border-bottom:1px solid rgba(241,242,242,.08);
+  }
+  .row:last-child{border-bottom:none;}
+  .msg{
+    margin-top:10px;
+    padding:16px;
+    border-radius:14px;
+    background:rgba(241,242,242,.04);
+    border:1px solid rgba(241,242,242,.12);
+    white-space:pre-wrap;
+  }
+  .muted{
+    color:rgba(241,242,242,.55);
+    font-size:12px;
+    line-height:1.6;
+  }
+  .foot{
+    padding:16px 22px;
+    border-top:1px solid rgba(241,242,242,.08);
+    text-align:center;
+  }
+  a{color:#F1F2F2;text-decoration:none;font-weight:700;}
+</style>
 </head>
 <body>
   <table class="wrap" width="100%" role="presentation">
@@ -195,13 +246,11 @@ function autoReplyHtml({ name, CAL_URL }) {
 <title>Message Received</title>
 </head>
 
-<body style="margin:0;padding:0;background:#0C0C0C;font-family:Helvetica,Arial,sans-serif;color:#F1F2F2;">
-
+<body style="margin:0;padding:0;background:#F1F2F2;font-family:Helvetica,Arial,sans-serif;color:#0C0C0C;">
   <div style="padding:40px 20px;">
-    <div style="max-width:700px;margin:0 auto;background:linear-gradient(180deg,#0C0C0C 0%,#0E1A2B 100%);border:1px solid rgba(241,242,242,0.08);">
-
+   <div style="max-width:700px;margin:0 auto;background:#FFFFFF;border:1px solid rgba(14,26,43,0.12);">
       <!-- Header -->
-      <div style="padding:28px;border-bottom:1px solid rgba(241,242,242,0.08);">
+      <div style="padding:28px;border-bottom:1px solid rgba(12,12,12,0.5);">
         <img src="${LOGO_URL}" height="22" alt="Volasec"/>
       </div>
 
@@ -210,7 +259,7 @@ function autoReplyHtml({ name, CAL_URL }) {
 
         <div style="width:80px;height:2px;background:#F1F2F2;margin-bottom:30px;"></div>
 
-        <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(241,242,242,0.4);margin-bottom:16px;">
+        <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(12,12,12,0.75);margin-bottom:16px;">
           Inquiry Received
         </p>
 
@@ -218,14 +267,14 @@ function autoReplyHtml({ name, CAL_URL }) {
           Thank you, ${escapeHtml(name)}.
         </h1>
 
-        <p style="font-size:15px;line-height:1.8;color:rgba(241,242,242,0.75);max-width:500px;">
+        <p style="font-size:15px;line-height:1.8;color:rgba(12,12,12,0.75);max-width:500px;">
           Your message has been received. A member of the Volasec team will respond within 24 hours.
         </p>
 
-        <a href="${escapeHtml(safeCal)}"
-           style="display:inline-block;margin-top:28px;padding:14px 28px;border:2px solid #F1F2F2;color:#F1F2F2;text-decoration:none;font-weight:900;font-size:13px;letter-spacing:1px;">
-           BOOK STRATEGY CALL
-        </a>
+       <a href="${escapeHtml(safeCal)}"
+   style="display:inline-block;margin-top:28px;padding:14px 28px;border:2px solid #0C0C0C;color:#0C0C0C;text-decoration:none;font-weight:900;font-size:13px;letter-spacing:1px;">
+   BOOK STRATEGY CALL
+</a>
 
         <p style="margin-top:40px;font-size:12px;color:rgba(241,242,242,0.5);max-width:460px;">
           Do not share sensitive credentials via email. Secure channels will be provided if required.
@@ -234,7 +283,7 @@ function autoReplyHtml({ name, CAL_URL }) {
       </div>
 
       <!-- Footer -->
-      <div style="padding:20px;border-top:1px solid rgba(241,242,242,0.08);font-size:12px;color:rgba(241,242,242,0.4);">
+      <div style="padding:20px;border-top:1px solid rgba(14,26,43,0.1);font-size:12px;color:rgba(241,242,242,0.4);">
         © ${new Date().getFullYear()} Volasec<br/>
         ${SITE_URL}
       </div>
