@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { toast, Toaster } from "react-hot-toast";
@@ -18,6 +18,7 @@ export default function BulkNewsletter() {
   const [sendingTest, setSendingTest] = useState(false);
   const [smallFont, setSmallFont] = useState(false);
   const [sendStatus, setSendStatus] = useState([]);
+  const previewRef = useRef(null);
 
   const LOGO_URL = "https://volasecj.pages.dev/monoblue.png";
   const SITE_URL = "https://volasec.com";
@@ -64,8 +65,6 @@ export default function BulkNewsletter() {
     return true;
   });
 
-  // Builds a fully self-contained email HTML using table-based layout
-  // same pattern as inboxEmailHtml — bgcolor on every td, style block in head
   const composeEmailHtml = (subName) => {
     const year = new Date().getFullYear();
     const fontSize = smallFont ? "13px" : "16px";
@@ -74,11 +73,15 @@ export default function BulkNewsletter() {
 
     if (ctaText && ctaUrl) {
       htmlMessage += `
-        <p style="text-align:center;margin-top:24px;">
-          <a href="${ctaUrl}" style="display:inline-block;padding:12px 24px;background:#0E1A2B;color:#ffffff;text-decoration:none;border-radius:6px;font-weight:600;">
-            ${ctaText}
-          </a>
-        </p>`;
+        <table cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin:24px auto 0 auto;">
+          <tr>
+            <td bgcolor="#0E1A2B" style="border-radius:6px;background:#0E1A2B;">
+              <a href="${ctaUrl}" style="display:inline-block;padding:12px 24px;background:#0E1A2B;color:#ffffff;text-decoration:none;border-radius:6px;font-weight:600;font-size:14px;">
+                ${ctaText}
+              </a>
+            </td>
+          </tr>
+        </table>`;
     }
 
     if (afterCtaText) {
@@ -88,29 +91,22 @@ export default function BulkNewsletter() {
         </p>`;
     }
 
-    return `
-<!DOCTYPE html>
+    return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="light" />
   <meta name="supported-color-schemes" content="light" />
-  <title>${title || "Volasec Newsletter"}</title>
+  <title>${(title || "Volasec Newsletter").replace(/</g, "&lt;")}</title>
   <style>
-    body {
-      margin: 0;
-      padding: 0;
-      background: #F1F2F2;
-      font-family: Helvetica, Arial, sans-serif;
-      color: #0E1A2B;
-    }
-    table { border-collapse: collapse; }
-    img { display: block; border: 0; outline: none; }
-    a { color: #0E1A2B; text-decoration: none; font-weight: 700; }
+    body { margin:0;padding:0;background:#F1F2F2;font-family:Helvetica,Arial,sans-serif;color:#0E1A2B; }
+    table { border-collapse:collapse; }
+    img { display:block;border:0;outline:none; }
+    a { color:#0E1A2B;text-decoration:none;font-weight:700; }
     @media (prefers-color-scheme: dark) {
-      body, table, td, div { background-color: #F1F2F2 !important; }
-      .card-bg { background-color: #ffffff !important; }
+      body, table, td, div, p, span, h1, h2, h3 { background-color:#F1F2F2 !important; color:#0E1A2B !important; }
+      .card-white { background-color:#ffffff !important; }
     }
   </style>
 </head>
@@ -120,23 +116,20 @@ export default function BulkNewsletter() {
       <td align="center">
         <table width="100%" style="max-width:680px;border-radius:18px;overflow:hidden;border:1px solid rgba(14,26,43,0.08);" bgcolor="#ffffff" cellpadding="0" cellspacing="0" role="presentation">
 
-          <!-- Header -->
           <tr>
-            <td align="center" bgcolor="#ffffff" style="padding:24px;border-bottom:1px solid rgba(14,26,43,0.08);background:#ffffff;">
+            <td align="center" bgcolor="#ffffff" class="card-white" style="padding:24px;border-bottom:1px solid rgba(14,26,43,0.08);background:#ffffff;">
               <img src="${LOGO_URL}" alt="Volasec" height="28" width="120" />
             </td>
           </tr>
 
-          <!-- Body -->
           <tr>
-            <td bgcolor="#ffffff" style="padding:24px;font-family:Helvetica,Arial,sans-serif;font-size:${fontSize};line-height:1.65;color:#0E1A2B;background:#ffffff;">
+            <td bgcolor="#ffffff" class="card-white" style="padding:24px;font-family:Helvetica,Arial,sans-serif;font-size:${fontSize};line-height:1.65;color:#0E1A2B;background:#ffffff;">
               ${htmlMessage}
             </td>
           </tr>
 
-          <!-- Footer -->
           <tr>
-            <td align="center" bgcolor="#ffffff" style="padding:24px;font-size:12px;color:rgba(14,26,43,0.5);border-top:1px solid rgba(14,26,43,0.08);background:#ffffff;">
+            <td align="center" bgcolor="#ffffff" class="card-white" style="padding:24px;font-size:12px;color:rgba(14,26,43,0.5);border-top:1px solid rgba(14,26,43,0.08);background:#ffffff;">
               © ${year} Volasec. All rights reserved.<br/>
               <a href="${SITE_URL}" target="_blank" rel="noreferrer" style="color:#0E1A2B;text-decoration:none;font-weight:600;">Visit Website</a>
             </td>
@@ -149,6 +142,16 @@ export default function BulkNewsletter() {
 </body>
 </html>`;
   };
+
+  // Write into iframe so email <style> block doesn't leak into the React page and blank it out
+  useEffect(() => {
+    if (!previewRef.current) return;
+    const doc = previewRef.current.contentDocument || previewRef.current.contentWindow?.document;
+    if (!doc) return;
+    doc.open();
+    doc.write(composeEmailHtml("Subscriber"));
+    doc.close();
+  });
 
   const handleSend = async () => {
     if (!customized) return toast.error("Enable 'Customized Newsletter' first!");
@@ -185,7 +188,6 @@ export default function BulkNewsletter() {
   const retryEmail = async (emailObj) => {
     const { email, name } = emailObj;
     setSendStatus((prev) => prev.map((s) => (s.email === email ? { ...s, status: "pending" } : s)));
-
     try {
       const res = await fetch("/api/bulk-newsletter", {
         method: "POST",
@@ -207,7 +209,6 @@ export default function BulkNewsletter() {
     if (!testEmail.trim()) return toast.error("Enter a test email!");
     if (!title.trim() || !message.trim()) return toast.error("Title and message are required!");
     setSendingTest(true);
-
     try {
       const res = await fetch("/api/send-test-email", {
         method: "POST",
@@ -315,10 +316,16 @@ export default function BulkNewsletter() {
             </button>
           </div>
 
-          {/* Preview */}
+          {/* Preview — iframe prevents email <style> from leaking into React page */}
           <div className="bg-white p-6 rounded-xl shadow-sm">
             <h3 className="font-bold text-[#0E1A2B] mb-2">Preview</h3>
-            <div className="max-h-96 overflow-auto" dangerouslySetInnerHTML={{ __html: composeEmailHtml("Subscriber") }} />
+            <iframe
+              ref={previewRef}
+              title="Email Preview"
+              className="w-full rounded-lg border border-[#0E1A2B]/10"
+              style={{ height: "500px", background: "#F1F2F2" }}
+              sandbox="allow-same-origin"
+            />
           </div>
 
           {/* Send */}
