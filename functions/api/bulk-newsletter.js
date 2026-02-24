@@ -16,6 +16,9 @@ function escapeHtml(str) {
 // ======= Bulk Newsletter Handler =======
 export async function onRequestPost(context) {
   const { request, env } = context;
+
+  const LOGO_URL = "https://volasec.com/assets/logo.png"; // ← your actual logo URL
+  const SITE_URL = "https://volasec.com"; // ← your actual site URL
   let data;
   try {
     data = await request.json();
