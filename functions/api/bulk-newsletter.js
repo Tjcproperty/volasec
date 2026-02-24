@@ -28,13 +28,22 @@ export async function onRequestPost(context) {
 
   const { subscribers, title, html } = data;
   if (!Array.isArray(subscribers) || subscribers.length === 0) {
-    return new Response(JSON.stringify({ error: "No subscribers provided" }), { status: 400, headers: { "Content-Type": "application/json" } });
+    return new Response(JSON.stringify({ error: "No subscribers provided" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
   }
   if (!title || !html) {
-    return new Response(JSON.stringify({ error: "Title or HTML message missing" }), { status: 400, headers: { "Content-Type": "application/json" } });
+    return new Response(
+      JSON.stringify({ error: "Title or HTML message missing" }),
+      { status: 400, headers: { "Content-Type": "application/json" } },
+    );
   }
   if (!env.RESEND_API_KEY) {
-    return new Response(JSON.stringify({ error: "Resend API key not configured" }), { status: 500, headers: { "Content-Type": "application/json" } });
+    return new Response(
+      JSON.stringify({ error: "Resend API key not configured" }),
+      { status: 500, headers: { "Content-Type": "application/json" } },
+    );
   }
 
   const results = [];
@@ -44,8 +53,11 @@ export async function onRequestPost(context) {
       continue;
     }
 
-    const personalizedHtml = html.replaceAll("{{name}}", escapeHtml(sub.name || "Subscriber"));
-
+    const personalizedHtml = `
+  <div style="background-color: #ffffff !important; background: #ffffff !important;">
+    ${html.replaceAll("{{name}}", escapeHtml(sub.name || "Subscriber"))}
+  </div>
+`;
     try {
       const res = await fetch("https://api.resend.com/emails", {
         method: "POST",
@@ -71,5 +83,8 @@ export async function onRequestPost(context) {
     }
   }
 
-  return new Response(JSON.stringify({ success: true, results }), { status: 200, headers: { "Content-Type": "application/json" } });
+  return new Response(JSON.stringify({ success: true, results }), {
+    status: 200,
+    headers: { "Content-Type": "application/json" },
+  });
 }
