@@ -79,10 +79,10 @@ export async function onRequestPost(context) {
 
 function inboxEmailHtml({ name, email, company, message }) {
   const SITE_URL = "https://volasec.com";
-  const LOGO_URL = "https://volasecj.pages.dev/monoblue.png"; // ✅ absolute URL
+  const LOGO_URL = "https://volasecj.pages.dev/monoblue.png";
   const SUPPORT_HOURS = "Monday – Friday, 9:00 AM – 5:00 PM (GMT)";
 
-return `
+  return `
 <!doctype html>
 <html lang="en">
 <head>
@@ -93,9 +93,9 @@ return `
   body{
     margin:0;
     padding:0;
-    background:#F1F2F2; /* light background */
+    background:#F1F2F2;
     font-family:Helvetica,Arial,sans-serif;
-    color:#0C0C0C; /* dark text */
+    color:#0C0C0C;
   }
   table{border-collapse:collapse;}
   img{display:block;border:0;outline:none;}
@@ -103,14 +103,14 @@ return `
   .card{
     max-width:680px;
     margin:0 auto;
-    background:linear-gradient(180deg,#F1F2F2 0%,#E0E4E6 100%); /* lighter gradient */
-    border:1px solid rgba(241,242,242,0.75);
+    background:#FFFFFF; /* white background */
+    border:1px solid rgba(14,26,43,0.08);
     border-radius:18px;
     overflow:hidden;
   }
   .head{
     padding:18px 22px;
-    border-bottom:1px solid rgba(241,242,242,0.75);
+    border-bottom:1px solid rgba(14,26,43,0.08);
   }
   .pill{
     font-size:11px;
@@ -144,8 +144,8 @@ return `
     margin-top:10px;
     padding:16px;
     border-radius:14px;
-    background:rgba(12,12,12,.04);
-    border:1px solid rgba(12,12,12,.12);
+    background:#F9F9F9; /* subtle white shade */
+    border:1px solid rgba(12,12,12,.08);
     white-space:pre-wrap;
   }
   .muted{
@@ -232,8 +232,7 @@ return `
 }
 
 function autoReplyHtml({ name, CAL_URL }) {
-
-  const LOGO_URL = "https://volasecj.pages.dev/monoblue.png"; // ✅ absolute URL
+  const LOGO_URL = "https://volasecj.pages.dev/monoblue.png";
   const SUPPORT_HOURS = "Monday – Friday, 9:00 AM – 5:00 PM (GMT)";
   const safeCal = CAL_URL || "https://cal.com/james-moyosore-quqdc8/30min";
 
@@ -248,17 +247,15 @@ function autoReplyHtml({ name, CAL_URL }) {
 
 <body style="margin:0;padding:0;background:#F1F2F2;font-family:Helvetica,Arial,sans-serif;color:#0C0C0C;">
   <div style="padding:40px 20px;">
-   <div style="max-width:700px;margin:0 auto;background:#FFFFFF;border:1px solid rgba(14,26,43,0.12);">
+    <div style="max-width:700px;margin:0 auto;background:#FFFFFF;border:1px solid rgba(14,26,43,0.08);border-radius:18px;overflow:hidden;">
+      
       <!-- Header -->
-      <div style="padding:28px;border-bottom:1px solid rgba(12,12,12,0.5);">
+      <div style="padding:28px;text-align:center;border-bottom:1px solid rgba(14,26,43,0.08);">
         <img src="${LOGO_URL}" height="22" alt="Volasec"/>
       </div>
 
       <!-- Body -->
-      <div style="padding:50px 40px;">
-
-        <div style="width:80px;height:2px;background:#F1F2F2;margin-bottom:30px;"></div>
-
+      <div style="padding:50px 40px;background:#FFFFFF;">
         <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(12,12,12,0.75);margin-bottom:16px;">
           Inquiry Received
         </p>
@@ -267,33 +264,30 @@ function autoReplyHtml({ name, CAL_URL }) {
           Thank you, ${escapeHtml(name)}.
         </h1>
 
-        <p style="font-size:15px;line-height:1.8;color:rgba(12,12,12,0.75);max-width:500px;">
+        <p style="font-size:15px;line-height:1.8;color:rgba(12,12,12,0.85);max-width:500px;">
           Your message has been received. A member of the Volasec team will respond within 24 hours.
         </p>
 
-       <a href="${escapeHtml(safeCal)}"
-   style="display:inline-block;margin-top:28px;padding:14px 28px;border:2px solid #0C0C0C;color:#0C0C0C;text-decoration:none;font-weight:900;font-size:13px;letter-spacing:1px;">
-   BOOK STRATEGY CALL
-</a>
+        <a href="${escapeHtml(safeCal)}"
+           style="display:inline-block;margin-top:28px;padding:14px 28px;border:2px solid #0C0C0C;color:#0C0C0C;text-decoration:none;font-weight:900;font-size:13px;letter-spacing:1px;border-radius:6px;">
+           BOOK STRATEGY CALL
+        </a>
 
         <p style="margin-top:40px;font-size:12px;color:rgba(12,12,12,0.75);max-width:460px;">
           Do not share sensitive credentials via email. Secure channels will be provided if required.
         </p>
-
       </div>
 
       <!-- Footer -->
-      <div style="padding:20px;border-top:1px solid rgba(14,26,43,0.1);font-size:12px;color:rgba(12,12,12,0.75);">
+      <div style="padding:20px;text-align:center;font-size:12px;color:rgba(12,12,12,0.75);border-top:1px solid rgba(14,26,43,0.08);">
         © ${new Date().getFullYear()} Volasec<br/>
-
+        Support hours: ${SUPPORT_HOURS}
       </div>
-
     </div>
   </div>
-
 </body>
 </html>
-  `;
+`;
 }
 
 function escapeHtml(str) {
