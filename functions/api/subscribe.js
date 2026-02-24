@@ -49,7 +49,7 @@ export async function onRequestPost(context) {
 
   console.log("RESEND KEY EXISTS:", !!env.RESEND_API_KEY);
 
-  const confirmUrl = `https://volasec.com/confirm?token=${token}`;
+  const confirmUrl = `https://volasecj.pages.dev/confirm?token=${token}`;
 
   try {
     const resendRes = await fetch("https://api.resend.com/emails", {
@@ -59,7 +59,7 @@ export async function onRequestPost(context) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "Volasec <contact@volasec.com>",
+        from: "Volasec <contact@services.volasec.com>",
         to: email,
         subject: "Confirm your subscription — Volasec",
         html: confirmationEmailHtml({ confirmUrl }), // ← CALL the function here
@@ -93,7 +93,7 @@ export async function onRequestPost(context) {
 // ======= Confirmation Email HTML =======
 function confirmationEmailHtml({ confirmUrl }) {
   const SITE_URL = "https://volasec.com";
-  const LOGO_URL = "https://volasec.com/monologo.png";
+  const LOGO_URL = "https://volasecj.pages.dev/monologo.png";
 
   return `
 <!DOCTYPE html>
