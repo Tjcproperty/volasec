@@ -104,13 +104,13 @@ function inboxEmailHtml({ name, email, company, message }) {
     max-width:680px;
     margin:0 auto;
     background:linear-gradient(180deg,#0C0C0C 0%,#0E1A2B 100%);
-    border:1px solid rgba(241,242,242,.08);
+    border:1px solid rgba(12,12,12,0.75);
     border-radius:18px;
     overflow:hidden;
   }
   .head{
     padding:18px 22px;
-    border-bottom:1px solid rgba(241,242,242,.08);
+    border-bottom:1px solid rgba(12,12,12,0.75);
   }
   .pill{
     font-size:11px;
@@ -137,7 +137,7 @@ function inboxEmailHtml({ name, email, company, message }) {
   }
   .row{
     padding:14px 0;
-    border-bottom:1px solid rgba(241,242,242,.08);
+    border-bottom:1px solid rgba(12,12,12,0.75);
   }
   .row:last-child{border-bottom:none;}
   .msg{
@@ -155,7 +155,7 @@ function inboxEmailHtml({ name, email, company, message }) {
   }
   .foot{
     padding:16px 22px;
-    border-top:1px solid rgba(241,242,242,.08);
+    border-top:1px solid rgba(12,12,12,0.75);
     text-align:center;
   }
   a{color:#F1F2F2;text-decoration:none;font-weight:700;}
@@ -276,14 +276,14 @@ function autoReplyHtml({ name, CAL_URL }) {
    BOOK STRATEGY CALL
 </a>
 
-        <p style="margin-top:40px;font-size:12px;color:rgba(241,242,242,0.5);max-width:460px;">
+        <p style="margin-top:40px;font-size:12px;color:rgba(12,12,12,0.75);max-width:460px;">
           Do not share sensitive credentials via email. Secure channels will be provided if required.
         </p>
 
       </div>
 
       <!-- Footer -->
-      <div style="padding:20px;border-top:1px solid rgba(14,26,43,0.1);font-size:12px;color:rgba(241,242,242,0.4);">
+      <div style="padding:20px;border-top:1px solid rgba(14,26,43,0.1);font-size:12px;color:rgba(12,12,12,0.75);">
         © ${new Date().getFullYear()} Volasec<br/>
 
       </div>
