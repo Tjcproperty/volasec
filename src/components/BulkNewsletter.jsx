@@ -26,7 +26,6 @@ export default function BulkNewsletter() {
   const LOGO_URL = "https://volasecj.pages.dev/monoblue.png";
   const SITE_URL = "https://volasec.com";
 
-  // Fetch subscribers
   const fetchSubscribers = async () => {
     setLoading(true);
     try {
@@ -41,7 +40,7 @@ export default function BulkNewsletter() {
         : [];
       setSubscribers(list);
     } catch (err) {
-      console.error("Failed to fetch subscribers", err);
+      console.error(err);
       toast.error("Failed to load subscribers");
       setSubscribers([]);
     } finally {
@@ -92,22 +91,18 @@ export default function BulkNewsletter() {
       </div>
     `;
   };
+
+  // Send newsletter
   const handleSend = async () => {
-    if (!customized)
-      return toast.error("Enable 'Customized Newsletter' first!");
-    if (!title.trim() || !message.trim())
-      return toast.error("Title and message are required!");
+    if (!customized) return toast.error("Enable 'Customized Newsletter' first!");
+    if (!title.trim() || !message.trim()) return toast.error("Title and message are required!");
 
     setSending(true);
 
-    // Only send subscribers + top-level html and title
     const payload = {
-      subscribers: filteredSubscribers.map((sub) => ({
-        email: sub.email,
-        name: sub.name,
-      })),
+      subscribers: filteredSubscribers.map((sub) => ({ email: sub.email, name: sub.name })),
       title,
-      html: composeEmailHtml("Subscriber"), // send placeholder {{name}} replaced in backend
+      html: composeEmailHtml("Subscriber"),
     };
 
     try {
@@ -121,8 +116,7 @@ export default function BulkNewsletter() {
 
       if (res.ok) {
         toast.success("Newsletter sent!");
-        console.log("Results:", data.results); // each email status
-        setSendStatus(data.results.map((r) => ({ ...r })));
+        setSendStatus(data.results);
       } else {
         toast.error(data.error || "Failed to send newsletter");
       }
@@ -135,7 +129,7 @@ export default function BulkNewsletter() {
   };
 
   const retryEmail = async (emailObj) => {
-    const { email, name, html } = emailObj;
+    const { email, name } = emailObj;
     setSendStatus((prev) =>
       prev.map((s) => (s.email === email ? { ...s, status: "pending" } : s)),
     );
@@ -144,52 +138,37 @@ export default function BulkNewsletter() {
       const res = await fetch("/api/bulk-newsletter", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ subscribers: [emailObj], title, html }),
+        body: JSON.stringify({ subscribers: [emailObj], title, html: composeEmailHtml(name) }),
       });
 
       const data = await res.json();
       setSendStatus((prev) =>
         prev.map((s) =>
           s.email === email
-            ? {
-                ...s,
-                status: res.ok ? "sent" : "failed",
-                details: res.ok ? null : data.error || data,
-              }
+            ? { ...s, status: res.ok ? "sent" : "failed", details: data.error || null }
             : s,
         ),
       );
     } catch (err) {
       setSendStatus((prev) =>
-        prev.map((s) =>
-          s.email === email
-            ? { ...s, status: "error", details: err.message }
-            : s,
-        ),
+        prev.map((s) => (s.email === email ? { ...s, status: "error", details: err.message } : s)),
       );
     }
   };
 
   const handleSendTest = async () => {
     if (!testEmail.trim()) return toast.error("Enter a test email!");
-    if (!title.trim() || !message.trim())
-      return toast.error("Title and message are required!");
+    if (!title.trim() || !message.trim()) return toast.error("Title and message are required!");
 
     setSendingTest(true);
     try {
       const res = await fetch("/api/send-test-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: testEmail,
-          title,
-          html: composeEmailHtml("Test Subscriber"),
-        }),
+        body: JSON.stringify({ email: testEmail, title, html: composeEmailHtml("Test Subscriber") }),
       });
       const data = await res.json();
-      data.status === "sent"
-        ? toast.success("Test email sent!")
-        : toast.error(data.error || "Failed");
+      data.status === "sent" ? toast.success("Test email sent!") : toast.error(data.error || "Failed");
     } catch (err) {
       console.error(err);
       toast.error("Failed to send test email");
@@ -199,7 +178,7 @@ export default function BulkNewsletter() {
   };
 
   return (
-    <div className="p-8 bg-secondary/5 min-h-screen">
+    <div className="p-8 bg-white min-h-screen text-dark">
       <Toaster position="top-right" />
       <div className="flex flex-col sm:flex-row sm:justify-between items-center mb-6 gap-4">
         <h1 className="text-3xl font-extrabold text-dark">Bulk Newsletter</h1>
@@ -227,7 +206,7 @@ export default function BulkNewsletter() {
             className={`px-4 py-2 rounded-lg ${
               filter === f
                 ? "bg-primary text-white"
-                : "bg-secondary border border-primary-30 text-dark"
+                : "bg-white border border-primary-30 text-dark"
             }`}
             onClick={() => setFilter(f)}
           >
@@ -237,29 +216,19 @@ export default function BulkNewsletter() {
       </div>
 
       {/* Subscribers */}
-      <div className="mb-6 max-h-64 overflow-auto border border-primary-20 rounded-lg p-4 bg-secondary">
-        {filteredSubscribers.length === 0 && (
-          <p className="text-dark/50">No subscribers in this category.</p>
-        )}
+      <div className="mb-6 max-h-64 overflow-auto border border-primary-20 rounded-lg p-4 bg-white">
+        {filteredSubscribers.length === 0 && <p className="text-dark/50">No subscribers in this category.</p>}
         {filteredSubscribers.map((sub) => (
-          <div
-            key={sub.email}
-            className="flex justify-between items-center mb-2 last:mb-0"
-          >
+          <div key={sub.email} className="flex justify-between items-center mb-2 last:mb-0">
             <span className="truncate">{sub.email}</span>
-            <span
-              className={`text-xs px-2 py-1 rounded-full ${
-                sub.confirmed
-                  ? "bg-green-100 text-green-800"
-                  : "bg-yellow-100 text-yellow-800"
-              }`}
-            >
+            <span className={`text-xs px-2 py-1 rounded-full ${sub.confirmed ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}`}>
               {sub.confirmed ? "Confirmed" : "Pending"}
             </span>
           </div>
         ))}
       </div>
 
+      {/* Customized Newsletter Form */}
       {customized && (
         <>
           <input
@@ -267,7 +236,7 @@ export default function BulkNewsletter() {
             placeholder="Newsletter Title / Subject"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full mb-4 px-4 py-2 rounded-lg border border-primary-30 bg-secondary text-dark placeholder-dark/40 focus:outline-none focus:border-primary transition-all duration-300"
+            className="w-full mb-4 px-4 py-2 rounded-lg border border-primary-30 bg-white text-dark placeholder-dark/40 focus:outline-none focus:border-primary transition-all duration-300"
           />
 
           <ReactQuill
@@ -278,59 +247,23 @@ export default function BulkNewsletter() {
             className="mb-4 bg-white rounded-lg overflow-hidden"
           />
 
+          {/* CTA Fields */}
           <div className="flex gap-3 mb-4">
-            <input
-              type="text"
-              placeholder="CTA Button Text (optional)"
-              value={ctaText}
-              onChange={(e) => setCtaText(e.target.value)}
-              className="flex-1 px-4 py-2 rounded-lg border border-primary-30 bg-secondary text-dark placeholder-dark/40 focus:outline-none focus:border-primary transition-all duration-300"
-            />
-            <input
-              type="url"
-              placeholder="CTA URL (optional)"
-              value={ctaUrl}
-              onChange={(e) => setCtaUrl(e.target.value)}
-              className="flex-1 px-4 py-2 rounded-lg border border-primary-30 bg-secondary text-dark placeholder-dark/40 focus:outline-none focus:border-primary transition-all duration-300"
-            />
+            <input type="text" placeholder="CTA Button Text (optional)" value={ctaText} onChange={(e) => setCtaText(e.target.value)} className="flex-1 px-4 py-2 rounded-lg border border-primary-30 bg-white text-dark placeholder-dark/40 focus:outline-none focus:border-primary transition-all duration-300" />
+            <input type="url" placeholder="CTA URL (optional)" value={ctaUrl} onChange={(e) => setCtaUrl(e.target.value)} className="flex-1 px-4 py-2 rounded-lg border border-primary-30 bg-white text-dark placeholder-dark/40 focus:outline-none focus:border-primary transition-all duration-300" />
           </div>
 
-          <input
-            type="text"
-            placeholder="Optional text after CTA button"
-            value={afterCtaText}
-            onChange={(e) => setAfterCtaText(e.target.value)}
-            className="w-full mb-4 px-4 py-2 rounded-lg border border-primary-30 bg-secondary text-dark placeholder-dark/40 focus:outline-none focus:border-primary transition-all duration-300"
-          />
+          <input type="text" placeholder="Optional text after CTA button" value={afterCtaText} onChange={(e) => setAfterCtaText(e.target.value)} className="w-full mb-4 px-4 py-2 rounded-lg border border-primary-30 bg-white text-dark placeholder-dark/40 focus:outline-none focus:border-primary transition-all duration-300" />
 
           <label className="flex items-center gap-2 mb-4">
-            <input
-              type="checkbox"
-              checked={smallFont}
-              onChange={() => setSmallFont(!smallFont)}
-              className="form-checkbox h-5 w-5 text-primary"
-            />
+            <input type="checkbox" checked={smallFont} onChange={() => setSmallFont(!smallFont)} className="form-checkbox h-5 w-5 text-primary" />
             Use smaller font
           </label>
 
           {/* Test Email */}
           <div className="mb-4 flex gap-3 items-center">
-            <input
-              type="email"
-              placeholder="Test Email Address"
-              value={testEmail}
-              onChange={(e) => setTestEmail(e.target.value)}
-              className="flex-1 px-4 py-2 rounded-lg border border-primary-30 bg-secondary text-dark placeholder-dark/40 focus:outline-none focus:border-primary transition-all duration-300"
-            />
-            <button
-              className={`px-4 py-2 rounded-lg font-semibold transition-colors duration-300 ${
-                sendingTest
-                  ? "bg-gray-400"
-                  : "bg-secondary border border-primary-30 text-dark hover:bg-primary/10"
-              }`}
-              onClick={handleSendTest}
-              disabled={sendingTest}
-            >
+            <input type="email" placeholder="Test Email Address" value={testEmail} onChange={(e) => setTestEmail(e.target.value)} className="flex-1 px-4 py-2 rounded-lg border border-primary-30 bg-white text-dark placeholder-dark/40 focus:outline-none focus:border-primary transition-all duration-300" />
+            <button onClick={handleSendTest} disabled={sendingTest} className={`px-4 py-2 rounded-lg font-semibold transition-colors duration-300 ${sendingTest ? "bg-gray-400" : "bg-primary text-white hover:bg-primary/80"}`}>
               {sendingTest ? "Sending..." : "Send Test"}
             </button>
           </div>
@@ -338,57 +271,28 @@ export default function BulkNewsletter() {
           {/* Preview */}
           <div className="mb-6">
             <h3 className="font-bold text-dark mb-2">Preview:</h3>
-            <div
-              className="p-4 border border-primary-30 rounded-lg bg-white text-dark max-h-96 overflow-auto"
-              dangerouslySetInnerHTML={{
-                __html: composeEmailHtml("Subscriber"),
-              }}
-            />
+            <div className="p-4 border border-primary-30 rounded-lg bg-white text-dark max-h-96 overflow-auto" dangerouslySetInnerHTML={{ __html: composeEmailHtml("Subscriber") }} />
           </div>
 
           {/* Send */}
-          <button
-            className={`px-6 py-3 rounded-lg font-semibold transition-colors duration-300 ${
-              sending
-                ? "bg-gray-400"
-                : "bg-primary text-white hover:bg-primary/80"
-            }`}
-            onClick={handleSend}
-            disabled={sending}
-          >
+          <button onClick={handleSend} disabled={sending} className={`px-6 py-3 rounded-lg font-semibold transition-colors duration-300 ${sending ? "bg-gray-400" : "bg-primary text-white hover:bg-primary/80"}`}>
             {sending ? "Sending..." : "Send Newsletter"}
           </button>
 
-          {/* Real-time send status */}
+          {/* Send Status */}
           {sendStatus.length > 0 && (
             <div className="mt-6 border-t pt-4">
               <h3 className="font-bold text-dark mb-2">Send Status:</h3>
               <ul className="space-y-2 max-h-64 overflow-auto">
                 {sendStatus.map((s) => (
-                  <li
-                    key={s.email}
-                    className="flex justify-between items-center"
-                  >
+                  <li key={s.email} className="flex justify-between items-center">
                     <span>{s.email}</span>
                     <span className="flex gap-2 items-center">
-                      <span
-                        className={`text-xs px-2 py-1 rounded-full ${
-                          s.status === "sent"
-                            ? "bg-green-100 text-green-800"
-                            : s.status === "pending"
-                              ? "bg-yellow-100 text-yellow-800"
-                              : "bg-red-100 text-red-800"
-                        }`}
-                      >
+                      <span className={`text-xs px-2 py-1 rounded-full ${s.status === "sent" ? "bg-green-100 text-green-800" : s.status === "pending" ? "bg-yellow-100 text-yellow-800" : "bg-red-100 text-red-800"}`}>
                         {s.status.toUpperCase()}
                       </span>
                       {["failed", "error"].includes(s.status) && (
-                        <button
-                          onClick={() => retryEmail(s)}
-                          className="text-sm text-primary underline"
-                        >
-                          Retry
-                        </button>
+                        <button onClick={() => retryEmail(s)} className="text-sm text-primary underline">Retry</button>
                       )}
                     </span>
                   </li>
