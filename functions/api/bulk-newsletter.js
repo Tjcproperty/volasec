@@ -16,7 +16,6 @@ function escapeHtml(str) {
 // ======= Bulk Newsletter Handler =======
 export async function onRequestPost(context) {
   const { request, env } = context;
-  console.log("🔥 Bulk newsletter handler running");
 
   let data;
   try {
