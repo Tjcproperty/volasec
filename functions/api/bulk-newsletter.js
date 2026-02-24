@@ -54,9 +54,43 @@ export async function onRequestPost(context) {
     }
 
     const personalizedHtml = `
-  <div style="background-color: #ffffff !important; background: #ffffff !important;">
-    ${html.replaceAll("{{name}}", escapeHtml(sub.name || "Subscriber"))}
-  </div>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="color-scheme" content="light">
+  <meta name="supported-color-schemes" content="light">
+</head>
+<body style="margin:0;padding:0;background-color:#F1F2F2;">
+  <table width="100%" bgcolor="#F1F2F2" cellpadding="0" cellspacing="0" border="0" style="padding:24px 0;">
+    <tr>
+      <td align="center">
+        <table width="100%" style="max-width:680px;border-radius:18px;overflow:hidden;border:1px solid rgba(14,26,43,0.08);" bgcolor="#ffffff" cellpadding="0" cellspacing="0">
+          
+          <tr>
+            <td align="center" style="padding:24px;border-bottom:1px solid rgba(14,26,43,0.08);" bgcolor="#ffffff">
+              <img src="${LOGO_URL}" alt="Volasec" width="120" height="28"/>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:24px;font-family:Helvetica,Arial,sans-serif;font-size:16px;line-height:1.6;color:#0E1A2B;" bgcolor="#ffffff">
+              ${html.replaceAll("{{name}}", escapeHtml(sub.name || "Subscriber"))}
+            </td>
+          </tr>
+
+          <tr>
+            <td align="center" style="padding:24px;font-size:12px;color:rgba(14,26,43,0.5);border-top:1px solid rgba(14,26,43,0.08);" bgcolor="#ffffff">
+              © ${new Date().getFullYear()} Volasec. All rights reserved.<br/>
+              <a href="${SITE_URL}" target="_blank" style="color:#0E1A2B;text-decoration:none;font-weight:600;">Visit Website</a>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
 `;
     try {
       const res = await fetch("https://api.resend.com/emails", {
