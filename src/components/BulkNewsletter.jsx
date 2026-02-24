@@ -66,7 +66,7 @@ export default function BulkNewsletter() {
     return true;
   });
 
-  // Compose email HTML with a card style like contact email
+  // Compose email HTML with a card style and white background
   const composeEmailHtml = (subName) => {
     let htmlMessage = message.replaceAll("{{name}}", subName);
 
@@ -87,13 +87,13 @@ export default function BulkNewsletter() {
     return `
       <div style="font-family:Helvetica,Arial,sans-serif;color:#0E1A2B;background:#F1F2F2;padding:24px;">
         <div style="max-width:680px;margin:0 auto;background:#fff;border-radius:18px;overflow:hidden;border:1px solid rgba(14,26,43,0.08);">
-          <div style="padding:24px;text-align:center;border-bottom:1px solid rgba(14,26,43,0.08);">
+          <div style="padding:24px;text-align:center;border-bottom:1px solid rgba(14,26,43,0.08);background:#fff;">
             <img src="${LOGO_URL}" alt="Volasec" height="28" width="120" />
           </div>
-          <div style="padding:24px;font-size:${smallFont ? "13px" : "16px"};">
+          <div style="padding:24px;font-size:${smallFont ? "13px" : "16px"};background:#fff;">
             ${htmlMessage}
           </div>
-          <div style="padding:24px;text-align:center;font-size:12px;color:rgba(14,26,43,0.5);border-top:1px solid rgba(14,26,43,0.08);">
+          <div style="padding:24px;text-align:center;font-size:12px;color:rgba(14,26,43,0.5);border-top:1px solid rgba(14,26,43,0.08);background:#fff;">
             © ${new Date().getFullYear()} Volasec. All rights reserved.<br/>
             <a href="${SITE_URL}" target="_blank" style="color:#0E1A2B;text-decoration:none;font-weight:600;">Visit Website</a>
           </div>
@@ -224,23 +224,38 @@ export default function BulkNewsletter() {
       {/* Customized Newsletter Form */}
       {customized && (
         <div className="space-y-4">
-          <div className="bg-white p-6 rounded-xl shadow-sm">
-            <input type="text" placeholder="Newsletter Title / Subject" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full mb-4 px-4 py-2 rounded-lg border border-[#0E1A2B]/30 focus:outline-none focus:border-[#0E1A2B]" />
-            <ReactQuill value={message} onChange={setMessage} modules={quillModules} placeholder="Write your newsletter message here. Use {{name}} for personalization." className="bg-white rounded-lg" />
+
+          {/* Title & Message */}
+          <div className="bg-white p-6 rounded-xl shadow-sm space-y-3">
+            <input
+              type="text"
+              placeholder="Newsletter Title / Subject"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-full px-4 py-2 rounded-lg border border-[#0E1A2B]/30 focus:outline-none focus:border-[#0E1A2B] bg-white text-[#0E1A2B]"
+            />
+            <ReactQuill
+              value={message}
+              onChange={setMessage}
+              modules={quillModules}
+              placeholder="Write your newsletter message here. Use {{name}} for personalization."
+              className="bg-white text-[#0E1A2B] rounded-lg"
+            />
           </div>
 
+          {/* CTA */}
           <div className="bg-white p-6 rounded-xl shadow-sm space-y-3">
             <h2 className="font-bold text-[#0E1A2B]">CTA Options</h2>
             <div className="flex gap-3">
-              <input type="text" placeholder="CTA Button Text" value={ctaText} onChange={(e) => setCtaText(e.target.value)} className="flex-1 px-4 py-2 rounded-lg border border-[#0E1A2B]/30 focus:outline-none focus:border-[#0E1A2B]" />
-              <input type="url" placeholder="CTA URL" value={ctaUrl} onChange={(e) => setCtaUrl(e.target.value)} className="flex-1 px-4 py-2 rounded-lg border border-[#0E1A2B]/30 focus:outline-none focus:border-[#0E1A2B]" />
+              <input type="text" placeholder="CTA Button Text" value={ctaText} onChange={(e) => setCtaText(e.target.value)} className="flex-1 px-4 py-2 rounded-lg border border-[#0E1A2B]/30 focus:outline-none focus:border-[#0E1A2B] bg-white text-[#0E1A2B]" />
+              <input type="url" placeholder="CTA URL" value={ctaUrl} onChange={(e) => setCtaUrl(e.target.value)} className="flex-1 px-4 py-2 rounded-lg border border-[#0E1A2B]/30 focus:outline-none focus:border-[#0E1A2B] bg-white text-[#0E1A2B]" />
             </div>
-            <input type="text" placeholder="Optional text after CTA" value={afterCtaText} onChange={(e) => setAfterCtaText(e.target.value)} className="w-full px-4 py-2 rounded-lg border border-[#0E1A2B]/30 focus:outline-none focus:border-[#0E1A2B]" />
+            <input type="text" placeholder="Optional text after CTA" value={afterCtaText} onChange={(e) => setAfterCtaText(e.target.value)} className="w-full px-4 py-2 rounded-lg border border-[#0E1A2B]/30 focus:outline-none focus:border-[#0E1A2B] bg-white text-[#0E1A2B]" />
           </div>
 
           {/* Test Email */}
           <div className="bg-white p-6 rounded-xl shadow-sm flex gap-3 items-center">
-            <input type="email" placeholder="Test Email Address" value={testEmail} onChange={(e) => setTestEmail(e.target.value)} className="flex-1 px-4 py-2 rounded-lg border border-[#0E1A2B]/30 focus:outline-none focus:border-[#0E1A2B]" />
+            <input type="email" placeholder="Test Email Address" value={testEmail} onChange={(e) => setTestEmail(e.target.value)} className="flex-1 px-4 py-2 rounded-lg border border-[#0E1A2B]/30 focus:outline-none focus:border-[#0E1A2B] bg-white text-[#0E1A2B]" />
             <button onClick={handleSendTest} disabled={sendingTest} className={`px-4 py-2 rounded-lg font-semibold ${sendingTest ? "bg-gray-400" : "bg-[#0E1A2B] text-white hover:bg-[#0E1A2B]/80"}`}>
               {sendingTest ? "Sending..." : "Send Test"}
             </button>
