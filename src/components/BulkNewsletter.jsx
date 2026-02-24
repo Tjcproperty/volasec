@@ -71,45 +71,69 @@ export default function BulkNewsletter() {
     let htmlMessage = message.replaceAll("{{name}}", subName);
 
     if (ctaText && ctaUrl) {
-      htmlMessage += `<p style="text-align:center;margin-top:24px;">
-        <a href="${ctaUrl}" style="display:inline-block;padding:12px 24px;background:#0E1A2B;color:#fff;text-decoration:none;border-radius:6px;font-weight:600;">
+      htmlMessage += `
+      <p style="text-align:center;margin-top:24px;">
+        <a href="${ctaUrl}" style="display:inline-block;padding:12px 24px;background:#0E1A2B;color:#ffffff;text-decoration:none;border-radius:6px;font-weight:600;">
           ${ctaText}
         </a>
       </p>`;
     }
 
     if (afterCtaText) {
-      htmlMessage += `<p style="text-align:center;margin-top:12px;color:rgba(14,26,43,0.75);">
+      htmlMessage += `
+      <p style="text-align:center;margin-top:12px;color:rgba(14,26,43,0.75);">
         ${afterCtaText}
       </p>`;
     }
 
     return `
-      <div style="font-family:Helvetica,Arial,sans-serif;color:#0E1A2B;background:#F1F2F2;padding:24px;">
-        <div style="max-width:680px;margin:0 auto;background:#fff;border-radius:18px;overflow:hidden;border:1px solid rgba(14,26,43,0.08);">
-          <div style="padding:24px;text-align:center;border-bottom:1px solid rgba(14,26,43,0.08);background:#fff;">
-            <img src="${LOGO_URL}" alt="Volasec" height="28" width="120" />
-          </div>
-          <div style="padding:24px;font-size:${smallFont ? "13px" : "16px"};background:#fff;">
-            ${htmlMessage}
-          </div>
-          <div style="padding:24px;text-align:center;font-size:12px;color:rgba(14,26,43,0.5);border-top:1px solid rgba(14,26,43,0.08);background:#fff;">
-            © ${new Date().getFullYear()} Volasec. All rights reserved.<br/>
-            <a href="${SITE_URL}" target="_blank" style="color:#0E1A2B;text-decoration:none;font-weight:600;">Visit Website</a>
-          </div>
-        </div>
-      </div>
-    `;
+  <table width="100%" bgcolor="#F1F2F2" cellpadding="0" cellspacing="0" border="0" style="padding:24px 0;">
+    <tr>
+      <td align="center">
+        <table width="100%" style="max-width:680px;border-radius:18px;overflow:hidden;border:1px solid rgba(14,26,43,0.08);" bgcolor="#ffffff" cellpadding="0" cellspacing="0">
+          
+          <!-- Header -->
+          <tr>
+            <td align="center" style="padding:24px;border-bottom:1px solid rgba(14,26,43,0.08);" bgcolor="#ffffff">
+              <img src="${LOGO_URL}" alt="Volasec" width="120" height="28"/>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding:24px;font-family:Helvetica,Arial,sans-serif;font-size:${smallFont ? "13px" : "16px"};line-height:1.6;color:#0E1A2B;" bgcolor="#ffffff">
+              ${htmlMessage}
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td align="center" style="padding:24px;font-size:12px;color:rgba(14,26,43,0.5);border-top:1px solid rgba(14,26,43,0.08);" bgcolor="#ffffff">
+              © ${new Date().getFullYear()} Volasec. All rights reserved.<br/>
+              <a href="${SITE_URL}" target="_blank" style="color:#0E1A2B;text-decoration:none;font-weight:600;">Visit Website</a>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+  `;
   };
 
   // Send newsletter
   const handleSend = async () => {
-    if (!customized) return toast.error("Enable 'Customized Newsletter' first!");
-    if (!title.trim() || !message.trim()) return toast.error("Title and message are required!");
+    if (!customized)
+      return toast.error("Enable 'Customized Newsletter' first!");
+    if (!title.trim() || !message.trim())
+      return toast.error("Title and message are required!");
     setSending(true);
 
     const payload = {
-      subscribers: filteredSubscribers.map((s) => ({ email: s.email, name: s.name })),
+      subscribers: filteredSubscribers.map((s) => ({
+        email: s.email,
+        name: s.name,
+      })),
       title,
       html: composeEmailHtml("Subscriber"),
     };
@@ -137,38 +161,63 @@ export default function BulkNewsletter() {
 
   const retryEmail = async (emailObj) => {
     const { email, name } = emailObj;
-    setSendStatus((prev) => prev.map((s) => (s.email === email ? { ...s, status: "pending" } : s)));
+    setSendStatus((prev) =>
+      prev.map((s) => (s.email === email ? { ...s, status: "pending" } : s)),
+    );
 
     try {
       const res = await fetch("/api/bulk-newsletter", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ subscribers: [emailObj], title, html: composeEmailHtml(name) }),
+        body: JSON.stringify({
+          subscribers: [emailObj],
+          title,
+          html: composeEmailHtml(name),
+        }),
       });
       const data = await res.json();
       setSendStatus((prev) =>
-        prev.map((s) => (s.email === email ? { ...s, status: res.ok ? "sent" : "failed", details: data.error || null } : s))
+        prev.map((s) =>
+          s.email === email
+            ? {
+                ...s,
+                status: res.ok ? "sent" : "failed",
+                details: data.error || null,
+              }
+            : s,
+        ),
       );
     } catch (err) {
       setSendStatus((prev) =>
-        prev.map((s) => (s.email === email ? { ...s, status: "error", details: err.message } : s))
+        prev.map((s) =>
+          s.email === email
+            ? { ...s, status: "error", details: err.message }
+            : s,
+        ),
       );
     }
   };
 
   const handleSendTest = async () => {
     if (!testEmail.trim()) return toast.error("Enter a test email!");
-    if (!title.trim() || !message.trim()) return toast.error("Title and message are required!");
+    if (!title.trim() || !message.trim())
+      return toast.error("Title and message are required!");
     setSendingTest(true);
 
     try {
       const res = await fetch("/api/send-test-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: testEmail, title, html: composeEmailHtml("Test Subscriber") }),
+        body: JSON.stringify({
+          email: testEmail,
+          title,
+          html: composeEmailHtml("Test Subscriber"),
+        }),
       });
       const data = await res.json();
-      data.status === "sent" ? toast.success("Test email sent!") : toast.error(data.error || "Failed");
+      data.status === "sent"
+        ? toast.success("Test email sent!")
+        : toast.error(data.error || "Failed");
     } catch (err) {
       console.error(err);
       toast.error("Failed to send test email");
@@ -183,13 +232,22 @@ export default function BulkNewsletter() {
 
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-        <h1 className="text-3xl font-extrabold text-[#0E1A2B]">Bulk Newsletter</h1>
+        <h1 className="text-3xl font-extrabold text-[#0E1A2B]">
+          Bulk Newsletter
+        </h1>
         <div className="flex items-center gap-3">
           <label className="inline-flex items-center gap-2 font-semibold text-[#0E1A2B]">
-            <input type="checkbox" checked={customized} onChange={() => setCustomized(!customized)} className="form-checkbox h-5 w-5 text-[#0E1A2B]" />
+            <input
+              type="checkbox"
+              checked={customized}
+              onChange={() => setCustomized(!customized)}
+              className="form-checkbox h-5 w-5 text-[#0E1A2B]"
+            />
             Customized Newsletter
           </label>
-          <span className="text-[#0E1A2B]/50 text-sm">{loading ? "Loading..." : `${subscribers.length} subscribers`}</span>
+          <span className="text-[#0E1A2B]/50 text-sm">
+            {loading ? "Loading..." : `${subscribers.length} subscribers`}
+          </span>
         </div>
       </div>
 
@@ -199,7 +257,9 @@ export default function BulkNewsletter() {
           <button
             key={f}
             className={`px-4 py-2 rounded-lg font-semibold ${
-              filter === f ? "bg-[#0E1A2B] text-white" : "bg-white border border-[#0E1A2B]/30 text-[#0E1A2B]"
+              filter === f
+                ? "bg-[#0E1A2B] text-white"
+                : "bg-white border border-[#0E1A2B]/30 text-[#0E1A2B]"
             }`}
             onClick={() => setFilter(f)}
           >
@@ -210,11 +270,18 @@ export default function BulkNewsletter() {
 
       {/* Subscribers */}
       <div className="mb-6 max-h-64 overflow-auto rounded-lg bg-white border border-[#0E1A2B]/20 p-4 shadow-sm">
-        {filteredSubscribers.length === 0 && <p className="text-[#0E1A2B]/50">No subscribers in this category.</p>}
+        {filteredSubscribers.length === 0 && (
+          <p className="text-[#0E1A2B]/50">No subscribers in this category.</p>
+        )}
         {filteredSubscribers.map((s) => (
-          <div key={s.email} className="flex justify-between items-center mb-2 last:mb-0">
+          <div
+            key={s.email}
+            className="flex justify-between items-center mb-2 last:mb-0"
+          >
             <span className="truncate">{s.email}</span>
-            <span className={`text-xs px-2 py-1 rounded-full ${s.confirmed ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}`}>
+            <span
+              className={`text-xs px-2 py-1 rounded-full ${s.confirmed ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}`}
+            >
               {s.confirmed ? "Confirmed" : "Pending"}
             </span>
           </div>
@@ -224,7 +291,6 @@ export default function BulkNewsletter() {
       {/* Customized Newsletter Form */}
       {customized && (
         <div className="space-y-4">
-
           {/* Title & Message */}
           <div className="bg-white p-6 rounded-xl shadow-sm space-y-3">
             <input
@@ -247,16 +313,44 @@ export default function BulkNewsletter() {
           <div className="bg-white p-6 rounded-xl shadow-sm space-y-3">
             <h2 className="font-bold text-[#0E1A2B]">CTA Options</h2>
             <div className="flex gap-3">
-              <input type="text" placeholder="CTA Button Text" value={ctaText} onChange={(e) => setCtaText(e.target.value)} className="flex-1 px-4 py-2 rounded-lg border border-[#0E1A2B]/30 focus:outline-none focus:border-[#0E1A2B] bg-white text-[#0E1A2B]" />
-              <input type="url" placeholder="CTA URL" value={ctaUrl} onChange={(e) => setCtaUrl(e.target.value)} className="flex-1 px-4 py-2 rounded-lg border border-[#0E1A2B]/30 focus:outline-none focus:border-[#0E1A2B] bg-white text-[#0E1A2B]" />
+              <input
+                type="text"
+                placeholder="CTA Button Text"
+                value={ctaText}
+                onChange={(e) => setCtaText(e.target.value)}
+                className="flex-1 px-4 py-2 rounded-lg border border-[#0E1A2B]/30 focus:outline-none focus:border-[#0E1A2B] bg-white text-[#0E1A2B]"
+              />
+              <input
+                type="url"
+                placeholder="CTA URL"
+                value={ctaUrl}
+                onChange={(e) => setCtaUrl(e.target.value)}
+                className="flex-1 px-4 py-2 rounded-lg border border-[#0E1A2B]/30 focus:outline-none focus:border-[#0E1A2B] bg-white text-[#0E1A2B]"
+              />
             </div>
-            <input type="text" placeholder="Optional text after CTA" value={afterCtaText} onChange={(e) => setAfterCtaText(e.target.value)} className="w-full px-4 py-2 rounded-lg border border-[#0E1A2B]/30 focus:outline-none focus:border-[#0E1A2B] bg-white text-[#0E1A2B]" />
+            <input
+              type="text"
+              placeholder="Optional text after CTA"
+              value={afterCtaText}
+              onChange={(e) => setAfterCtaText(e.target.value)}
+              className="w-full px-4 py-2 rounded-lg border border-[#0E1A2B]/30 focus:outline-none focus:border-[#0E1A2B] bg-white text-[#0E1A2B]"
+            />
           </div>
 
           {/* Test Email */}
           <div className="bg-white p-6 rounded-xl shadow-sm flex gap-3 items-center">
-            <input type="email" placeholder="Test Email Address" value={testEmail} onChange={(e) => setTestEmail(e.target.value)} className="flex-1 px-4 py-2 rounded-lg border border-[#0E1A2B]/30 focus:outline-none focus:border-[#0E1A2B] bg-white text-[#0E1A2B]" />
-            <button onClick={handleSendTest} disabled={sendingTest} className={`px-4 py-2 rounded-lg font-semibold ${sendingTest ? "bg-gray-400" : "bg-[#0E1A2B] text-white hover:bg-[#0E1A2B]/80"}`}>
+            <input
+              type="email"
+              placeholder="Test Email Address"
+              value={testEmail}
+              onChange={(e) => setTestEmail(e.target.value)}
+              className="flex-1 px-4 py-2 rounded-lg border border-[#0E1A2B]/30 focus:outline-none focus:border-[#0E1A2B] bg-white text-[#0E1A2B]"
+            />
+            <button
+              onClick={handleSendTest}
+              disabled={sendingTest}
+              className={`px-4 py-2 rounded-lg font-semibold ${sendingTest ? "bg-gray-400" : "bg-[#0E1A2B] text-white hover:bg-[#0E1A2B]/80"}`}
+            >
               {sendingTest ? "Sending..." : "Send Test"}
             </button>
           </div>
@@ -264,11 +358,20 @@ export default function BulkNewsletter() {
           {/* Preview */}
           <div className="bg-white p-6 rounded-xl shadow-sm">
             <h3 className="font-bold text-[#0E1A2B] mb-2">Preview</h3>
-            <div className="max-h-96 overflow-auto" dangerouslySetInnerHTML={{ __html: composeEmailHtml("Subscriber") }} />
+            <div
+              className="max-h-96 overflow-auto"
+              dangerouslySetInnerHTML={{
+                __html: composeEmailHtml("Subscriber"),
+              }}
+            />
           </div>
 
           {/* Send */}
-          <button onClick={handleSend} disabled={sending} className={`w-full py-3 rounded-xl font-bold text-white ${sending ? "bg-gray-400" : "bg-[#0E1A2B] hover:bg-[#0E1A2B]/80"}`}>
+          <button
+            onClick={handleSend}
+            disabled={sending}
+            className={`w-full py-3 rounded-xl font-bold text-white ${sending ? "bg-gray-400" : "bg-[#0E1A2B] hover:bg-[#0E1A2B]/80"}`}
+          >
             {sending ? "Sending..." : "Send Newsletter"}
           </button>
 
@@ -278,14 +381,24 @@ export default function BulkNewsletter() {
               <h3 className="font-bold text-[#0E1A2B] mb-2">Send Status</h3>
               <ul className="max-h-64 overflow-auto space-y-2">
                 {sendStatus.map((s) => (
-                  <li key={s.email} className="flex justify-between items-center">
+                  <li
+                    key={s.email}
+                    className="flex justify-between items-center"
+                  >
                     <span>{s.email}</span>
                     <span className="flex gap-2 items-center">
-                      <span className={`text-xs px-2 py-1 rounded-full ${s.status === "sent" ? "bg-green-100 text-green-800" : s.status === "pending" ? "bg-yellow-100 text-yellow-800" : "bg-red-100 text-red-800"}`}>
+                      <span
+                        className={`text-xs px-2 py-1 rounded-full ${s.status === "sent" ? "bg-green-100 text-green-800" : s.status === "pending" ? "bg-yellow-100 text-yellow-800" : "bg-red-100 text-red-800"}`}
+                      >
                         {s.status.toUpperCase()}
                       </span>
                       {["failed", "error"].includes(s.status) && (
-                        <button onClick={() => retryEmail(s)} className="text-sm text-[#0E1A2B] underline">Retry</button>
+                        <button
+                          onClick={() => retryEmail(s)}
+                          className="text-sm text-[#0E1A2B] underline"
+                        >
+                          Retry
+                        </button>
                       )}
                     </span>
                   </li>
