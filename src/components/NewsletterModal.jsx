@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -56,8 +54,7 @@ export default function NewsletterModal({
     }
   }, [isOpen]);
 
-  const validateEmail = (value) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  const validateEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -86,9 +83,7 @@ export default function NewsletterModal({
       if (!volasecRes.ok) {
         if (volasecRes.status === 409) {
           setStatus("error");
-          setErrorMessage(
-            SUBSCRIPTION_CONTENT.messages.alreadySubscribed
-          );
+          setErrorMessage(SUBSCRIPTION_CONTENT.messages.alreadySubscribed);
           return;
         }
         throw new Error(volasecData.message || "Subscription failed");
@@ -158,34 +153,23 @@ export default function NewsletterModal({
                     <input
                       type="email"
                       value={email}
-                      onChange={(e) =>
-                        setEmail(e.target.value)
-                      }
-                      placeholder={
-                        SUBSCRIPTION_CONTENT.form.emailPlaceholder
-                      }
-                      disabled={
-                        status === "loading" ||
-                        status === "success"
-                      }
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder={SUBSCRIPTION_CONTENT.form.emailPlaceholder}
+                      disabled={status === "loading" || status === "success"}
                       className={cx(
                         "flex-1 px-6 py-4 rounded-xl",
                         "bg-dark/50 border-2 border-primary-30",
-                        "focus:border-primary focus:outline-none"
+                        "focus:border-primary focus:outline-none",
                       )}
                     />
 
                     <button
                       type="submit"
-                      disabled={
-                        status === "loading" ||
-                        status === "success"
-                      }
+                      disabled={status === "loading" || status === "success"}
                       className="px-8 py-4 rounded-xl font-bold bg-primary text-secondary transition disabled:opacity-50"
                     >
                       {status === "loading"
-                        ? SUBSCRIPTION_CONTENT.form
-                            .buttonTextLoading
+                        ? SUBSCRIPTION_CONTENT.form.buttonTextLoading
                         : SUBSCRIPTION_CONTENT.form.buttonText}
                     </button>
                   </div>
@@ -198,10 +182,7 @@ export default function NewsletterModal({
                         exit={{ opacity: 0 }}
                         className="p-4 rounded-xl bg-primary/10 border border-primary/30 text-primary text-sm"
                       >
-                        {
-                          SUBSCRIPTION_CONTENT.messages
-                            .success
-                        }
+                        {SUBSCRIPTION_CONTENT.messages.success}
                       </motion.div>
                     )}
                   </AnimatePresence>

@@ -1,5 +1,3 @@
-"use client";
-
 import NewsletterModal from "@/components/NewsletterModal";
 import React, { useState } from "react";
 
