@@ -26,7 +26,7 @@ export async function onRequestPost(context) {
 
   const CAL_URL = env.VOLASEC_CAL_URL;
   const TO = env.VOLASEC_CONTACT_TO;
-  const FROM = "Volasec <contact@volasec.com>";
+  const FROM = "Volasec <contact@services.volasec.com>";
 
   const inboxSubject = `New Contact Request — ${name}${company ? ` (${company})` : ""}`;
   const autoReplySubject = "We got your message — Volasec";
@@ -80,7 +80,7 @@ export async function onRequestPost(context) {
 
 function inboxEmailHtml({ name, email, company, message }) {
   const SITE_URL = "https://volasec.com";
-  const LOGO_URL = "https://volasec.com/monologo.png"; // ✅ absolute URL
+  const LOGO_URL = "https://volasecj.pages.dev/monologo.png"; // ✅ absolute URL
   const SUPPORT_HOURS = "Monday – Friday, 9:00 AM – 5:00 PM (GMT)";
 
   return `
@@ -182,7 +182,7 @@ function inboxEmailHtml({ name, email, company, message }) {
 
 function autoReplyHtml({ name, CAL_URL }) {
   const SITE_URL = "https://volasec.com";
-  const LOGO_URL = "https://volasec.com/monologo.png"; // ✅ absolute URL
+  const LOGO_URL = "https://volasecj.pages.dev/monologo.png"; // ✅ absolute URL
   const SUPPORT_HOURS = "Monday – Friday, 9:00 AM – 5:00 PM (GMT)";
   const safeCal = CAL_URL || "https://cal.com/james-moyosore-quqdc8/30min";
 
