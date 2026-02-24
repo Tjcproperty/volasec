@@ -72,33 +72,35 @@ export default function NewsletterModal({ isOpen, onClose }) {
     setStatus("loading");
 
     try {
-      // Step 1: Call Volasec subscribers endpoint to get token
-      // const volasecRes = await fetch(
-      //   "https://subscribe.volasec.com/subscribers",
-      //   {
-      //     method: "POST",
-      //     headers: { "Content-Type": "application/json" },
-      //     body: JSON.stringify({ email, source: "landing_page" }),
-      //   },
-      // );
+      // Step 1: Get token from Volasec API
+      const volasecRes = await fetch(
+        "https://subscribe.volasec.com/subscribers",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, source: "landing_page" }),
+        },
+      );
 
-      // const volasecData = await volasecRes.json();
-      // console.log("Volasec response:", volasecData);
+      const volasecData = await volasecRes.json();
+      console.log("Volasec response:", volasecData);
 
-      // if (!volasecRes.ok) {
-      //   if (volasecRes.status === 409) {
-      //     setStatus("error");
-      //     setErrorMessage(SUBSCRIPTION_CONTENT.messages.alreadySubscribed);
-      //     return;
-      //   }
-      //   throw new Error(volasecData.message || "Subscription failed");
-      // }
+      if (!volasecRes.ok) {
+        if (volasecRes.status === 409) {
+          setStatus("error");
+          setErrorMessage(SUBSCRIPTION_CONTENT.messages.alreadySubscribed);
+          return;
+        }
+        throw new Error(volasecData.message || "Subscription failed");
+      }
 
-      const token =
-        "eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6Im1veW9zb3JlamFtZXNAZ21haWwuY29tIiwiZXhwIjoxNzcyNDU3MTcyfQ.TaeM3EJzU5XQatMdZoSkP0qTv0meDDp5Y3AJYMF5PFY";
+      // ✅ USE THE REAL TOKEN
+      const token = volasecData.token;
       if (!token) throw new Error("No confirmation token returned");
+
       console.log("Received token:", token);
-      // Step 2: Pass token and email to your internal API to send email
+
+      // Step 2: Send token to internal API
       const internalRes = await fetch("/api/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
