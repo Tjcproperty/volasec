@@ -88,87 +88,74 @@ function inboxEmailHtml({ name, email, company, message }) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light" />
+  <meta name="supported-color-schemes" content="light" />
   <title>Volasec Contact Request</title>
- <style>
-  body{
-    margin:0;
-    padding:0;
-    background:#F1F2F2;
-    font-family:Helvetica,Arial,sans-serif;
-    color:#0C0C0C;
-  }
-  table{border-collapse:collapse;}
-  img{display:block;border:0;outline:none;}
-  .wrap{width:100%;padding:24px 12px;}
-  .card{
-    max-width:680px;
-    margin:0 auto;
-    background:#FFFFFF; /* white background */
-    border:1px solid rgba(14,26,43,0.08);
-    border-radius:18px;
-    overflow:hidden;
-  }
-  .head{
-    padding:18px 22px;
-    border-bottom:1px solid rgba(14,26,43,0.08);
-  }
-  .pill{
-    font-size:11px;
-    letter-spacing:.18em;
-    text-transform:uppercase;
-    padding:8px 12px;
-    border-radius:999px;
-    border:1px solid rgba(12,12,12,.18);
-    background:rgba(12,12,12,.06);
-    color:#0C0C0C;
-  }
-  .p{padding:22px;}
-  .label{
-    font-size:12px;
-    letter-spacing:.14em;
-    text-transform:uppercase;
-    color:rgba(12,12,12,.45);
-    margin-bottom:8px;
-  }
-  .value{
-    font-size:15px;
-    line-height:1.65;
-    color:#0C0C0C;
-  }
-  .row{
-    padding:14px 0;
-    border-bottom:1px solid rgba(241,242,242,0.75);
-  }
-  .row:last-child{border-bottom:none;}
-  .msg{
-    margin-top:10px;
-    padding:16px;
-    border-radius:14px;
-    background:#F9F9F9; /* subtle white shade */
-    border:1px solid rgba(12,12,12,.08);
-    white-space:pre-wrap;
-  }
-  .muted{
-    color:rgba(12,12,12,.55);
-    font-size:12px;
-    line-height:1.6;
-  }
-  .foot{
-    padding:16px 22px;
-    border-top:1px solid rgba(241,242,242,0.75);
-    text-align:center;
-  }
-  a{color:#0C0C0C;text-decoration:none;font-weight:700;}
-</style>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #F1F2F2;
+      font-family: Helvetica, Arial, sans-serif;
+      color: #0C0C0C;
+    }
+    table { border-collapse: collapse; }
+    img { display: block; border: 0; outline: none; }
+    a { color: #0C0C0C; text-decoration: none; font-weight: 700; }
+    .pill {
+      font-size: 11px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(12,12,12,.18);
+      background: rgba(12,12,12,.06);
+      color: #0C0C0C;
+    }
+    .label {
+      font-size: 12px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: rgba(12,12,12,.45);
+      margin-bottom: 8px;
+    }
+    .value {
+      font-size: 15px;
+      line-height: 1.65;
+      color: #0C0C0C;
+    }
+    .msg {
+      margin-top: 10px;
+      padding: 16px;
+      border-radius: 14px;
+      background: #F9F9F9;
+      border: 1px solid rgba(12,12,12,.08);
+      white-space: pre-wrap;
+    }
+    .muted {
+      color: rgba(12,12,12,.55);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+    @media (prefers-color-scheme: dark) {
+      body, table, td, div, p, span { background-color: #F1F2F2 !important; color: #0C0C0C !important; }
+      .card-white { background-color: #ffffff !important; }
+      .msg { background-color: #F9F9F9 !important; }
+    }
+  </style>
 </head>
-<body>
-  <table class="wrap" width="100%" role="presentation">
+<body style="margin:0;padding:0;background:#F1F2F2;">
+  <table width="100%" bgcolor="#F1F2F2" cellpadding="0" cellspacing="0" border="0" role="presentation" style="padding:24px 12px;">
     <tr>
       <td align="center">
-        <table class="card" width="100%" role="presentation">
+
+        <!-- Card -->
+        <table width="100%" style="max-width:680px;border-radius:18px;overflow:hidden;border:1px solid rgba(14,26,43,0.08);" bgcolor="#ffffff" cellpadding="0" cellspacing="0" role="presentation">
+
+          <!-- Header -->
           <tr>
-            <td class="head">
-              <table width="100%" role="presentation">
+            <td bgcolor="#ffffff" style="padding:18px 22px;border-bottom:1px solid rgba(14,26,43,0.08);background:#ffffff;">
+              <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
                 <tr>
                   <td align="left">
                     <img src="${LOGO_URL}" alt="Volasec" height="22" />
@@ -181,27 +168,28 @@ function inboxEmailHtml({ name, email, company, message }) {
             </td>
           </tr>
 
+          <!-- Body -->
           <tr>
-            <td class="p">
-              <div class="row">
-                <div class="label">Name</div>
-                <div class="value">${escapeHtml(name)}</div>
-              </div>
+            <td bgcolor="#ffffff" style="padding:22px;background:#ffffff;">
 
-              <div class="row">
-                <div class="label">Email</div>
-                <div class="value">${escapeHtml(email)}</div>
-              </div>
-
-              <div class="row">
-                <div class="label">Company</div>
-                <div class="value">${escapeHtml(company || "—")}</div>
-              </div>
-
-              <div class="row">
-                <div class="label">Message</div>
-                <div class="msg">${escapeHtml(message)}</div>
-              </div>
+              <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                <tr><td style="padding:14px 0;border-bottom:1px solid rgba(241,242,242,0.75);">
+                  <div class="label">Name</div>
+                  <div class="value">${escapeHtml(name)}</div>
+                </td></tr>
+                <tr><td style="padding:14px 0;border-bottom:1px solid rgba(241,242,242,0.75);">
+                  <div class="label">Email</div>
+                  <div class="value">${escapeHtml(email)}</div>
+                </td></tr>
+                <tr><td style="padding:14px 0;border-bottom:1px solid rgba(241,242,242,0.75);">
+                  <div class="label">Company</div>
+                  <div class="value">${escapeHtml(company || "—")}</div>
+                </td></tr>
+                <tr><td style="padding:14px 0;">
+                  <div class="label">Message</div>
+                  <div class="msg">${escapeHtml(message)}</div>
+                </td></tr>
+              </table>
 
               <p class="muted" style="margin-top:14px;">
                 Replying to this email will reply directly to the sender (Reply-To is set).
@@ -209,8 +197,9 @@ function inboxEmailHtml({ name, email, company, message }) {
             </td>
           </tr>
 
+          <!-- Footer -->
           <tr>
-            <td class="foot">
+            <td align="center" bgcolor="#ffffff" style="padding:16px 22px;border-top:1px solid rgba(241,242,242,0.75);background:#ffffff;">
               <div class="muted">
                 <a href="${SITE_URL}" target="_blank" rel="noreferrer">${SITE_URL}</a><br/>
                 Support hours: ${SUPPORT_HOURS}<br/>
@@ -220,9 +209,11 @@ function inboxEmailHtml({ name, email, company, message }) {
           </tr>
         </table>
 
-        <p class="muted" style="margin-top:14px;">
+        <!-- Copyright -->
+        <p class="muted" style="margin-top:14px;text-align:center;">
           © ${new Date().getFullYear()} Volasec. All rights reserved.
         </p>
+
       </td>
     </tr>
   </table>
@@ -235,56 +226,102 @@ function autoReplyHtml({ name, CAL_URL }) {
   const LOGO_URL = "https://volasecj.pages.dev/monoblue.png";
   const SUPPORT_HOURS = "Monday – Friday, 9:00 AM – 5:00 PM (GMT)";
   const safeCal = CAL_URL || "https://cal.com/james-moyosore-quqdc8/30min";
+  const year = new Date().getFullYear();
 
   return `
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Message Received</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light" />
+  <meta name="supported-color-schemes" content="light" />
+  <title>Message Received</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #F1F2F2;
+      font-family: Helvetica, Arial, sans-serif;
+      color: #0C0C0C;
+    }
+    table { border-collapse: collapse; }
+    img { display: block; border: 0; outline: none; }
+    @media (prefers-color-scheme: dark) {
+      body, table, td, div, p, span, h1 {
+        background-color: #F1F2F2 !important;
+        color: #0C0C0C !important;
+      }
+      .card-white { background-color: #ffffff !important; }
+      .cta-btn {
+        border-color: #0C0C0C !important;
+        color: #0C0C0C !important;
+      }
+    }
+  </style>
 </head>
+<body style="margin:0;padding:0;background:#F1F2F2;">
+  <table width="100%" bgcolor="#F1F2F2" cellpadding="0" cellspacing="0" border="0" role="presentation" style="padding:40px 20px;">
+    <tr>
+      <td align="center">
 
-<body style="margin:0;padding:0;background:#F1F2F2;font-family:Helvetica,Arial,sans-serif;color:#0C0C0C;">
-  <div style="padding:40px 20px;">
-    <div style="max-width:700px;margin:0 auto;background:#FFFFFF;border:1px solid rgba(14,26,43,0.08);border-radius:18px;overflow:hidden;">
-      
-      <!-- Header -->
-      <div style="padding:28px;text-align:center;border-bottom:1px solid rgba(14,26,43,0.08);">
-        <img src="${LOGO_URL}" height="22" alt="Volasec"/>
-      </div>
+        <!-- Card -->
+        <table width="100%" style="max-width:700px;border-radius:18px;overflow:hidden;border:1px solid rgba(14,26,43,0.08);" bgcolor="#ffffff" cellpadding="0" cellspacing="0" role="presentation">
 
-      <!-- Body -->
-      <div style="padding:50px 40px;background:#FFFFFF;">
-        <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(12,12,12,0.75);margin-bottom:16px;">
-          Inquiry Received
-        </p>
+          <!-- Header -->
+          <tr>
+            <td align="center" bgcolor="#ffffff" style="padding:28px;border-bottom:1px solid rgba(14,26,43,0.08);background:#ffffff;">
+              <img src="${LOGO_URL}" height="22" alt="Volasec" />
+            </td>
+          </tr>
 
-        <h1 style="font-size:26px;font-weight:900;margin:0 0 20px 0;">
-          Thank you, ${escapeHtml(name)}.
-        </h1>
+          <!-- Body -->
+          <tr>
+            <td bgcolor="#ffffff" style="padding:50px 40px;background:#ffffff;">
 
-        <p style="font-size:15px;line-height:1.8;color:rgba(12,12,12,0.85);max-width:500px;">
-          Your message has been received. A member of the Volasec team will respond within 24 hours.
-        </p>
+              <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(12,12,12,0.75);margin:0 0 16px 0;">
+                Inquiry Received
+              </p>
 
-        <a href="${escapeHtml(safeCal)}"
-           style="display:inline-block;margin-top:28px;padding:14px 28px;border:2px solid #0C0C0C;color:#0C0C0C;text-decoration:none;font-weight:900;font-size:13px;letter-spacing:1px;border-radius:6px;">
-           BOOK STRATEGY CALL
-        </a>
+              <h1 style="font-size:26px;font-weight:900;margin:0 0 20px 0;color:#0C0C0C;">
+                Thank you, ${escapeHtml(name)}.
+              </h1>
 
-        <p style="margin-top:40px;font-size:12px;color:rgba(12,12,12,0.75);max-width:460px;">
-          Do not share sensitive credentials via email. Secure channels will be provided if required.
-        </p>
-      </div>
+              <p style="font-size:15px;line-height:1.8;color:rgba(12,12,12,0.85);max-width:500px;margin:0;">
+                Your message has been received. A member of the Volasec team will respond within 24 hours.
+              </p>
 
-      <!-- Footer -->
-      <div style="padding:20px;text-align:center;font-size:12px;color:rgba(12,12,12,0.75);border-top:1px solid rgba(14,26,43,0.08);">
-        © ${new Date().getFullYear()} Volasec<br/>
-        Support hours: ${SUPPORT_HOURS}
-      </div>
-    </div>
-  </div>
+              <table cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin-top:28px;">
+                <tr>
+                  <td bgcolor="#ffffff" style="background:#ffffff;">
+                    <a href="${escapeHtml(safeCal)}"
+                       class="cta-btn"
+                       style="display:inline-block;padding:14px 28px;border:2px solid #0C0C0C;color:#0C0C0C;text-decoration:none;font-weight:900;font-size:13px;letter-spacing:1px;border-radius:6px;background:#ffffff;">
+                      BOOK STRATEGY CALL
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin-top:40px;font-size:12px;color:rgba(12,12,12,0.75);max-width:460px;">
+                Do not share sensitive credentials via email. Secure channels will be provided if required.
+              </p>
+
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td align="center" bgcolor="#ffffff" style="padding:20px;font-size:12px;color:rgba(12,12,12,0.75);border-top:1px solid rgba(14,26,43,0.08);background:#ffffff;">
+              © ${year} Volasec<br/>
+              Support hours: ${SUPPORT_HOURS}
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
 </body>
 </html>
 `;
