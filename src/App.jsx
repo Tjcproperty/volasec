@@ -9,6 +9,7 @@ import Footer from "./layout/Footer";
 import DemoPage from "./pages/DemoPage";
 import SubscribersList from "./components/SubscribersList";
 import ConfirmSubscription from "./components/ConfirmSubscription";
+import BulkNewsletter from "./components/BulkNewsletter";
 
 function App() {
   return (
@@ -32,6 +33,16 @@ function App() {
               <>
                 {/* <Header /> */}
                 <SubscribersList />
+                <Footer />
+              </>
+            }
+          />
+           <Route
+            path="/bulk-newsletter"
+            element={
+              <>
+                {/* <Header /> */}
+                <BulkNewsletter />
                 <Footer />
               </>
             }

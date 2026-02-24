@@ -43,32 +43,32 @@ export default function SubscribersList() {
   }, []);
 
   return (
-    <div className="relative p-8 min-h-screen bg-secondary/5">
+    <div className="relative p-8  pt-20 min-h-screen bg-secondary/5">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center mb-10 gap-4">
+      <div className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center mb-12 gap-6">
         <div>
-          <p className="text-xs font-semibold tracking-[0.2em] uppercase text-primary/50 mb-1">
+          <p className="text-xs font-semibold tracking-widest uppercase text-primary/50 mb-2">
             Admin Dashboard
           </p>
-          <h1 className="text-3xl font-black text-dark">
+          <h1 className="text-4xl font-extrabold text-dark flex items-center gap-3">
             Subscribers
-            <span className="ml-3 inline-flex items-center justify-center text-xs font-bold bg-primary/10 text-primary border border-primary/20 rounded-full px-3 py-0.5">
+            <span className="inline-flex items-center justify-center text-sm font-semibold bg-primary/10 text-primary border border-primary/20 rounded-sm px-3 py-0.5">
               {loading ? "…" : subscribers.length}
             </span>
           </h1>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex gap-3">
           <input
             type="number"
             placeholder="Limit"
             value={limit}
             onChange={(e) => setLimit(e.target.value)}
-            className="w-24 px-4 py-2 bg-secondary border-2 border-primary-30 rounded-xl text-dark placeholder-dark/30 text-sm focus:outline-none focus:border-primary transition-all duration-300"
+            className="w-28 px-4 py-2 bg-secondary border-2 border-primary-30 rounded-lg text-dark placeholder-dark/40 text-sm focus:outline-none focus:border-primary transition-all duration-300"
           />
           <button
             onClick={fetchSubscribers}
-            className="px-5 py-2 bg-primary text-primary-foreground rounded-xl font-bold text-sm hover:bg-primary-80 transition-colors duration-300 active:scale-95"
+            className="px-5 py-2 bg-primary text-primary-foreground rounded-lg font-semibold text-sm hover:bg-primary/80 transition-colors duration-300 active:scale-95 shadow-sm"
           >
             Refresh
           </button>
@@ -77,15 +77,15 @@ export default function SubscribersList() {
 
       {/* States */}
       {loading ? (
-        <div className="flex items-center gap-3 text-dark/50 text-base mt-12">
-          <svg className="animate-spin w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24">
+        <div className="flex items-center gap-3 text-dark/50 text-base mt-16">
+          <svg className="animate-spin w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
           </svg>
           Loading subscribers…
         </div>
       ) : subscribers.length === 0 ? (
-        <p className="text-dark/50 text-base mt-12">No subscribers found.</p>
+        <p className="text-dark/50 text-base mt-16">No subscribers found.</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <AnimatePresence>
@@ -96,32 +96,38 @@ export default function SubscribersList() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.4, ease, delay: idx * 0.05 }}
-                className="relative bg-secondary border-2 border-primary-30 rounded-2xl p-6 shadow-sm overflow-hidden hover:border-primary/40 hover:shadow-md transition-all duration-300 group"
+                className="relative bg-secondary border border-primary-20 rounded-2xl p-6 shadow hover:shadow-lg transition-all duration-300 group overflow-hidden"
               >
-                {/* Floating gradient orb */}
+                {/* Floating orb */}
                 <motion.div
-                  className="absolute w-32 h-32 bg-primary/10 rounded-full blur-3xl -top-8 -right-8 pointer-events-none"
-                  animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
+                  className="absolute w-28 h-28 bg-primary/10 rounded-sm blur-3xl -top-6 -right-6 pointer-events-none"
+                  animate={{ scale: [1, 1.15, 1], opacity: [0.3, 0.5, 0.3] }}
                   transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: idx * 0.3 }}
                 />
 
-                {/* Top badges */}
-                <div className="flex items-start justify-between mb-4">
-                  <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full border ${
-                    sub.confirmed
-                      ? "bg-primary/10 text-primary border-primary/20"
-                      : "bg-dark/5 text-dark/50 border-dark/10"
-                  }`}>
-                    <span className={`w-1.5 h-1.5 rounded-full ${sub.confirmed ? "bg-primary" : "bg-dark/30"}`} />
+                {/* Status & Source */}
+                <div className="flex justify-between mb-4 items-center">
+                  <span
+                    className={`inline-flex items-center gap-2 text-xs font-semibold px-3 py-1 rounded-sm border ${
+                      sub.confirmed
+                        ? "bg-primary/10 text-primary border-primary/20"
+                        : "bg-dark/5 text-dark/50 border-dark/20"
+                    }`}
+                  >
+                    <span
+                      className={`w-2 h-2 rounded-sm ${
+                        sub.confirmed ? "bg-primary" : "bg-dark/30"
+                      }`}
+                    />
                     {sub.confirmed ? "Confirmed" : "Pending"}
                   </span>
-                  <span className="text-xs text-dark/40 bg-primary/5 px-2.5 py-1 rounded-full border border-primary/10">
+                  <span className="text-xs text-dark/40 bg-primary/5 px-2.5 py-1 rounded-sm border border-primary/10">
                     {sub.source}
                   </span>
                 </div>
 
                 {/* Email */}
-                <h2 className="text-sm font-bold text-dark mb-3 truncate pr-2 group-hover:text-primary transition-colors duration-200">
+                <h2 className="text-sm font-bold text-dark mb-2 truncate group-hover:text-primary transition-colors duration-200">
                   {sub.email}
                 </h2>
 
