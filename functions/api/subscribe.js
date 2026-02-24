@@ -144,7 +144,7 @@ function confirmationEmailHtml({ confirmUrl }) {
       <div style="padding:20px 28px;border-top:1px solid rgba(14,26,43,0.06);font-size:12px;color:rgba(14,26,43,0.5);background:#FAFBFC;">
         © ${new Date().getFullYear()} Volasec<br/>
         <a href="${SITE_URL}" target="_blank" style="color:#0E1A2B;text-decoration:none;font-weight:600;">
-          ${SITE_URL}
+   
         </a>
       </div>
 

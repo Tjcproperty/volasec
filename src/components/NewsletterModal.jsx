@@ -3,10 +3,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-// ============================================================================
-// CONTENT CONFIG
-// ============================================================================
-
 const SUBSCRIPTION_CONTENT = {
   heading: {
     title: "Stay Ahead of",
@@ -29,15 +25,18 @@ const SUBSCRIPTION_CONTENT = {
   privacyNote: "We respect your privacy. Unsubscribe at any time.",
 };
 
-// ============================================================================
-
 function cx(...c) {
   return c.filter(Boolean).join(" ");
 }
 
 const ease = [0.22, 1, 0.36, 1];
 
-export default function NewsletterModal({ isOpen, onClose }) {
+export default function NewsletterModal({
+  isOpen,
+  onClose,
+  onSubscribed,
+  onPending,
+}) {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState("idle");
   const [errorMessage, setErrorMessage] = useState("");
@@ -57,8 +56,9 @@ export default function NewsletterModal({ isOpen, onClose }) {
     }
   }, [isOpen]);
 
-  const validateEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-  // Inside NewsletterModal -> handleSubmit
+  const validateEmail = (value) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage("");
@@ -72,7 +72,6 @@ export default function NewsletterModal({ isOpen, onClose }) {
     setStatus("loading");
 
     try {
-      // Step 1: Get token from Volasec API
       const volasecRes = await fetch(
         "https://subscribe.volasec.com/subscribers",
         {
@@ -83,38 +82,36 @@ export default function NewsletterModal({ isOpen, onClose }) {
       );
 
       const volasecData = await volasecRes.json();
-      console.log("Volasec response:", volasecData);
 
       if (!volasecRes.ok) {
         if (volasecRes.status === 409) {
           setStatus("error");
-          setErrorMessage(SUBSCRIPTION_CONTENT.messages.alreadySubscribed);
+          setErrorMessage(
+            SUBSCRIPTION_CONTENT.messages.alreadySubscribed
+          );
           return;
         }
         throw new Error(volasecData.message || "Subscription failed");
       }
 
-      // ✅ USE THE REAL TOKEN
       const token = volasecData.token;
       if (!token) throw new Error("No confirmation token returned");
 
-      console.log("Received token:", token);
-
-      // Step 2: Send token to internal API
-      const internalRes = await fetch("/api/subscribe", {
+      await fetch("/api/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, token }),
       });
 
-      const internalData = await internalRes.json();
-      console.log("Internal API response:", internalData);
-
-      if (!internalRes.ok)
-        throw new Error(internalData.message || "Email send failed");
+      // 🔥 Mark as pending confirmation (2 week cooldown)
+      onPending?.(email);
 
       setStatus("success");
-      setEmail("");
+
+      // Auto close after success
+      setTimeout(() => {
+        onClose();
+      }, 2000);
     } catch (err) {
       console.error("Subscription error:", err);
       setStatus("error");
@@ -126,7 +123,6 @@ export default function NewsletterModal({ isOpen, onClose }) {
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -145,7 +141,6 @@ export default function NewsletterModal({ isOpen, onClose }) {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="bg-secondary border-2 border-primary-30 rounded-2xl p-10 relative overflow-hidden">
-                {/* Header */}
                 <div className="text-center mb-8">
                   <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-dark mb-4">
                     {SUBSCRIPTION_CONTENT.heading.title}{" "}
@@ -158,57 +153,55 @@ export default function NewsletterModal({ isOpen, onClose }) {
                   </p>
                 </div>
 
-                {/* Form */}
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="flex flex-col sm:flex-row gap-4">
                     <input
                       type="email"
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder={SUBSCRIPTION_CONTENT.form.emailPlaceholder}
-                      disabled={status === "loading" || status === "success"}
+                      onChange={(e) =>
+                        setEmail(e.target.value)
+                      }
+                      placeholder={
+                        SUBSCRIPTION_CONTENT.form.emailPlaceholder
+                      }
+                      disabled={
+                        status === "loading" ||
+                        status === "success"
+                      }
                       className={cx(
                         "flex-1 px-6 py-4 rounded-xl",
                         "bg-dark/50 border-2 border-primary-30",
-                        "text-dark placeholder:text-dark/40",
-                        "focus:border-primary focus:outline-none",
-                        status === "error" &&
-                          "border-red-500 focus:border-red-500",
+                        "focus:border-primary focus:outline-none"
                       )}
                     />
 
                     <button
                       type="submit"
-                      disabled={status === "loading" || status === "success"}
-                      className="px-8 py-4 rounded-xl font-bold bg-primary text-dark transition disabled:opacity-50"
+                      disabled={
+                        status === "loading" ||
+                        status === "success"
+                      }
+                      className="px-8 py-4 rounded-xl font-bold bg-primary text-secondary transition disabled:opacity-50"
                     >
                       {status === "loading"
-                        ? SUBSCRIPTION_CONTENT.form.buttonTextLoading
+                        ? SUBSCRIPTION_CONTENT.form
+                            .buttonTextLoading
                         : SUBSCRIPTION_CONTENT.form.buttonText}
                     </button>
                   </div>
 
-                  {/* Messages */}
                   <AnimatePresence mode="wait">
                     {status === "success" && (
                       <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         className="p-4 rounded-xl bg-primary/10 border border-primary/30 text-primary text-sm"
                       >
-                        {SUBSCRIPTION_CONTENT.messages.success}
-                      </motion.div>
-                    )}
-
-                    {status === "error" && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0 }}
-                        className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm"
-                      >
-                        {errorMessage}
+                        {
+                          SUBSCRIPTION_CONTENT.messages
+                            .success
+                        }
                       </motion.div>
                     )}
                   </AnimatePresence>

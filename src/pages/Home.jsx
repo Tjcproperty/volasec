@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useScroll, useSpring } from "framer-motion";
 
 import Hero from "@/components/Hero";
@@ -14,49 +14,48 @@ import Contact from "../components/Contact";
 import BookCallFloater from "@/components/BookCallFloater";
 import NewsletterModal from "@/components/NewsletterModal";
 
-/* ===================== Cookie Helpers ===================== */
-function getCookie(name) {
-  if (typeof document === "undefined") return null;
-  const match = document.cookie
-    .split("; ")
-    .find((row) => row.startsWith(`${name}=`));
-  return match ? decodeURIComponent(match.split("=")[1]) : null;
-}
+/* ===================== Newsletter Storage Keys ===================== */
 
-function setCookie(name, value, days = 365) {
-  if (typeof document === "undefined") return;
-  const maxAge = days * 24 * 60 * 60;
-  document.cookie = `${name}=${encodeURIComponent(
-    value,
-  )}; Path=/; Max-Age=${maxAge}; SameSite=Lax`;
-}
+const LS_CONFIRMED = "volasec_newsletter_confirmed";
+const LS_PENDING = "volasec_newsletter_pending";
+const TWO_WEEKS = 14 * 24 * 60 * 60 * 1000;
+
+/* ===================== Component ===================== */
 
 const VolaSecLanding = () => {
   const [activeSection, setActiveSection] = useState("hero");
+  const [isNewsletterOpen, setIsNewsletterOpen] = useState(false);
+
   const { scrollYProgress } = useScroll();
 
-  // Smooth scroll progress (kept from your code)
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 100,
     damping: 30,
     restDelta: 0.001,
   });
 
-  /* ===================== Newsletter Modal Logic ===================== */
-  const [isNewsletterOpen, setIsNewsletterOpen] = useState(false);
-  const openedNewsletterRef = useRef(false);
-
-  const LS_KEY = "volasec_newsletter_accepted";
-  const COOKIE_KEY = "volasec_newsletter_accepted";
+  /* ===================== Newsletter Logic ===================== */
 
   useEffect(() => {
     const timer = setTimeout(() => {
       try {
-        const lsValue = window.localStorage.getItem(LS_KEY);
-        const cookieValue = getCookie(COOKIE_KEY);
-        const hasAccepted = lsValue === "1" || cookieValue === "1";
+        const confirmed = localStorage.getItem(LS_CONFIRMED);
 
-        if (!hasAccepted) setIsNewsletterOpen(true);
+        // ✅ If confirmed → never show again
+        if (confirmed === "1") return;
+
+        const pendingRaw = localStorage.getItem(LS_PENDING);
+
+        if (pendingRaw) {
+          const { timestamp } = JSON.parse(pendingRaw);
+          const now = Date.now();
+
+          // ⏳ If still within 14 days → do not show
+          if (now - timestamp < TWO_WEEKS) return;
+        }
+
+        // Otherwise show modal
+        setIsNewsletterOpen(true);
       } catch {
         setIsNewsletterOpen(true);
       }
@@ -65,23 +64,32 @@ const VolaSecLanding = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  const handleNewsletterSubscribed = () => {
-    try {
-      window.localStorage.setItem(LS_KEY, "1");
-    } catch {}
-
-    setCookie(COOKIE_KEY, "1", 365);
-    setIsNewsletterOpen(false);
-  };
-
-  const handleNewsletterClose = () => {
-    // If you want "close" to also permanently stop it, uncomment:
-    // handleNewsletterSubscribed();
+  /* Called after form submission (before email confirmation) */
+  const handlePending = (email) => {
+    localStorage.setItem(
+      LS_PENDING,
+      JSON.stringify({
+        email,
+        timestamp: Date.now(),
+      }),
+    );
 
     setIsNewsletterOpen(false);
   };
 
-  /* ===================== Section Observer for Nav Highlighting ===================== */
+  /* Called after actual confirmation */
+  const handleConfirmed = () => {
+    localStorage.setItem(LS_CONFIRMED, "1");
+    localStorage.removeItem(LS_PENDING);
+    setIsNewsletterOpen(false);
+  };
+
+  const handleClose = () => {
+    setIsNewsletterOpen(false);
+  };
+
+  /* ===================== Section Observer ===================== */
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -97,22 +105,24 @@ const VolaSecLanding = () => {
     const sections = document.querySelectorAll("section[id]");
     sections.forEach((section) => observer.observe(section));
 
-    return () => sections.forEach((section) => observer.unobserve(section));
+    return () =>
+      sections.forEach((section) =>
+        observer.unobserve(section),
+      );
   }, []);
 
-  /* ===================== Smooth Scroll to Sections ===================== */
+  /* ===================== Smooth Scroll ===================== */
+
   useEffect(() => {
     const handleSmoothScroll = (e) => {
-      // Only handle anchor clicks
       const a = e.target.closest?.("a");
       if (!a) return;
 
       const href = a.getAttribute("href");
       if (!href) return;
 
-      // You used "/sectionId" links; keep same behavior
       if (href.startsWith("/")) {
-        const sectionId = href.substring(1); // remove leading "/"
+        const sectionId = href.substring(1);
         const section = document.getElementById(sectionId);
 
         if (section) {
@@ -126,8 +136,14 @@ const VolaSecLanding = () => {
     };
 
     document.addEventListener("click", handleSmoothScroll);
-    return () => document.removeEventListener("click", handleSmoothScroll);
+    return () =>
+      document.removeEventListener(
+        "click",
+        handleSmoothScroll,
+      );
   }, []);
+
+  /* ===================== Render ===================== */
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -144,11 +160,11 @@ const VolaSecLanding = () => {
         <BookCallFloater />
       </main>
 
-      {/* Newsletter Modal */}
       <NewsletterModal
         isOpen={isNewsletterOpen}
-        onClose={handleNewsletterClose}
-        onSubscribed={handleNewsletterSubscribed}
+        onClose={handleClose}
+        onPending={handlePending}
+        onSubscribed={handleConfirmed}
       />
     </div>
   );

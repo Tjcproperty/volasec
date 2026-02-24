@@ -4,11 +4,13 @@ import { useEffect, useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const API_URL = "https://subscribe.volasec.com/confirm";
+const LS_KEY = "volasec_newsletter_state";
 
 export default function ConfirmSubscription({ logoSrc = "/Iconwhite.png" }) {
   const [status, setStatus] = useState("loading");
   const [message, setMessage] = useState("");
 
+  /* ===================== Confirm Token ===================== */
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
@@ -27,11 +29,21 @@ export default function ConfirmSubscription({ logoSrc = "/Iconwhite.png" }) {
         if (!res.ok) {
           setStatus("error");
           setMessage(data.message || "Subscription confirmation failed.");
-        } else {
-          setStatus("success");
-          setMessage(data.message || "Your subscription is confirmed!");
+          return;
         }
-      } catch {
+
+        // ✅ Mark as confirmed in localStorage
+        localStorage.setItem(
+          LS_KEY,
+          JSON.stringify({
+            status: "confirmed",
+            timestamp: Date.now(),
+          })
+        );
+
+        setStatus("success");
+        setMessage(data.message || "Your subscription is confirmed!");
+      } catch (err) {
         setStatus("error");
         setMessage("Unexpected error. Please try again.");
       }
@@ -40,7 +52,7 @@ export default function ConfirmSubscription({ logoSrc = "/Iconwhite.png" }) {
     confirm();
   }, []);
 
-  /* 🔹 Same subtle logo pattern logic as footer */
+  /* ===================== Background Logo Texture ===================== */
   const bgMarks = useMemo(
     () => [
       { top: "12%", left: "6%", size: 30, opacity: 0.05, rotate: -8 },
@@ -49,13 +61,13 @@ export default function ConfirmSubscription({ logoSrc = "/Iconwhite.png" }) {
       { bottom: "28%", right: "12%", size: 38, opacity: 0.12, rotate: -10 },
       { bottom: "16%", left: "30%", size: 42, opacity: 0.14, rotate: 8 },
     ],
-    [],
+    []
   );
 
   return (
     <div className="relative min-h-screen bg-dark overflow-hidden flex items-center justify-center px-6">
 
-      {/* Logo texture */}
+      {/* Background Logo Texture */}
       <div className="pointer-events-none absolute inset-0">
         {bgMarks.map((m, i) => (
           <img
@@ -79,7 +91,7 @@ export default function ConfirmSubscription({ logoSrc = "/Iconwhite.png" }) {
         ))}
       </div>
 
-      {/* Accent glows */}
+      {/* Accent Glows */}
       <div className="pointer-events-none absolute -top-32 right-0 h-96 w-96 bg-primary-30 blur-[160px] opacity-20" />
       <div className="pointer-events-none absolute -bottom-32 left-0 h-96 w-96 bg-secondary-30 blur-[160px] opacity-10" />
 
@@ -92,11 +104,12 @@ export default function ConfirmSubscription({ logoSrc = "/Iconwhite.png" }) {
           transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
           className="relative z-10 w-full max-w-xl border border-secondary-10 bg-primary/20 backdrop-blur-sm p-12"
         >
-          {/* Top logo */}
+          {/* Logo */}
           <div className="mb-10 flex justify-center">
             <img src={logoSrc} className="h-16" alt="Volasec" />
           </div>
 
+          {/* ===================== Loading ===================== */}
           {status === "loading" && (
             <div className="text-center">
               <div className="w-14 h-14 border-2 border-secondary/20 border-t-secondary animate-spin mx-auto mb-6" />
@@ -109,6 +122,7 @@ export default function ConfirmSubscription({ logoSrc = "/Iconwhite.png" }) {
             </div>
           )}
 
+          {/* ===================== Success ===================== */}
           {status === "success" && (
             <div className="text-center">
               <p className="text-[11px] tracking-[0.3em] uppercase text-secondary/40 mb-3">
@@ -130,6 +144,7 @@ export default function ConfirmSubscription({ logoSrc = "/Iconwhite.png" }) {
             </div>
           )}
 
+          {/* ===================== Error ===================== */}
           {status === "error" && (
             <div className="text-center">
               <p className="text-[11px] tracking-[0.3em] uppercase text-secondary/40 mb-3">
