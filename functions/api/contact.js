@@ -188,94 +188,60 @@ function autoReplyHtml({ name, CAL_URL }) {
 
   return `
 <!doctype html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>We got your message</title>
-  <style>
-    body{margin:0;padding:0;background:#F1F2F2;font-family:Helvetica,Arial,sans-serif;color:#0C0C0C;}
-    table{border-collapse:collapse;}
-    img{display:block;border:0;outline:none;}
-    .wrap{width:100%;padding:24px 12px;}
-    .card{max-width:680px;margin:0 auto;background:#fff;border:1px solid rgba(14,26,43,.16);border-radius:18px;overflow:hidden;}
-    .head{padding:18px 22px;background:linear-gradient(180deg, rgba(12,12,12,.96), rgba(14,26,43,.92));border-bottom:1px solid rgba(241,242,242,.12);}
-    .pill{font-size:11px;letter-spacing:.18em;text-transform:uppercase;padding:8px 12px;border-radius:999px;border:1px solid rgba(241,242,242,.18);background:rgba(241,242,242,.06);color:#F1F2F2;white-space:nowrap;}
-    .p{padding:22px;}
-    .title{font-size:22px;line-height:1.25;font-weight:900;letter-spacing:-.2px;margin:0;}
-    .muted{color:rgba(12,12,12,.68);font-size:13px;line-height:1.7;margin-top:12px;}
-    .btn{display:inline-block;margin-top:16px;padding:14px 20px;background:#0E1A2B;color:#fff!important;text-decoration:none;border-radius:999px;font-weight:800;letter-spacing:.3px;font-size:13px;}
-    a{color:#0E1A2B;text-decoration:none;font-weight:800;}
-    .links{margin-top:14px;font-size:13px;}
-    .links span{color:rgba(12,12,12,.5);margin:0 8px;}
-    .support{margin-top:10px;font-size:12px;color:rgba(12,12,12,.55);}
-    .box{margin-top:16px;padding:14px 16px;border-radius:14px;background:rgba(14,26,43,.04);border:1px solid rgba(14,26,43,.12);font-size:12px;color:rgba(12,12,12,.7);line-height:1.6;}
-    .foot{padding:16px 22px;background:rgba(14,26,43,.03);border-top:1px solid rgba(14,26,43,.10);text-align:center;}
-    @media (max-width:600px){ .p{padding:18px!important;} .title{font-size:20px!important;} .btn{display:block!important;text-align:center!important;} .pill{display:none!important;} }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Message Received</title>
 </head>
 
-<body>
-  <table class="wrap" width="100%" role="presentation">
-    <tr>
-      <td align="center">
-        <table class="card" width="100%" role="presentation">
-          <tr>
-            <td class="head">
-              <table width="100%" role="presentation">
-                <tr>
-                  <td align="left">
-                    <img src="${LOGO_URL}" alt="Volasec" height="22" />
-                  </td>
-                  <td align="right">
-                    <span class="pill">Message received</span>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
+<body style="margin:0;padding:0;background:#0C0C0C;font-family:Helvetica,Arial,sans-serif;color:#F1F2F2;">
 
-          <tr>
-            <td class="p">
-              <h1 class="title">Thanks for contacting Volasec, ${escapeHtml(name)}.</h1>
+  <div style="padding:40px 20px;">
+    <div style="max-width:700px;margin:0 auto;background:linear-gradient(180deg,#0C0C0C 0%,#0E1A2B 100%);border:1px solid rgba(241,242,242,0.08);">
 
-              <p class="muted">
-                We’ve received your message and we’ll get back to you within <strong>24 hours</strong>.
-                If your request is time-sensitive, reply with <strong>“URGENT”</strong> in the subject.
-              </p>
+      <!-- Header -->
+      <div style="padding:28px;border-bottom:1px solid rgba(241,242,242,0.08);">
+        <img src="${LOGO_URL}" height="22" alt="Volasec"/>
+      </div>
 
-              <a class="btn" href="${escapeHtml(safeCal)}" target="_blank" rel="noreferrer">
-                Book a Strategy Call
-              </a>
+      <!-- Body -->
+      <div style="padding:50px 40px;">
 
-              <div class="links">
-                <a href="${SITE_URL}" target="_blank" rel="noreferrer">Visit our website</a>
-                <span>•</span>
-                <a href="${SITE_URL}/contact" target="_blank" rel="noreferrer">Contact page</a>
-              </div>
+        <div style="width:80px;height:2px;background:#F1F2F2;margin-bottom:30px;"></div>
 
-              <div class="support">Support hours: ${SUPPORT_HOURS}</div>
+        <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(241,242,242,0.4);margin-bottom:16px;">
+          Inquiry Received
+        </p>
 
-              <div class="box">
-                Please avoid sharing sensitive credentials via email. If required, we’ll provide a secure channel for follow-up.
-              </div>
+        <h1 style="font-size:26px;font-weight:900;margin:0 0 20px 0;">
+          Thank you, ${escapeHtml(name)}.
+        </h1>
 
-              <p class="muted" style="margin-top:16px;">— Volasec Team</p>
-            </td>
-          </tr>
+        <p style="font-size:15px;line-height:1.8;color:rgba(241,242,242,0.75);max-width:500px;">
+          Your message has been received. A member of the Volasec team will respond within 24 hours.
+        </p>
 
-          <tr>
-            <td class="foot">
-              <div style="font-size:12px;color:rgba(12,12,12,.6);line-height:1.7;">
-                © ${new Date().getFullYear()} Volasec. All rights reserved.<br/>
-                You received this email because you contacted us via our website.
-              </div>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
+        <a href="${escapeHtml(safeCal)}"
+           style="display:inline-block;margin-top:28px;padding:14px 28px;border:2px solid #F1F2F2;color:#F1F2F2;text-decoration:none;font-weight:900;font-size:13px;letter-spacing:1px;">
+           BOOK STRATEGY CALL
+        </a>
+
+        <p style="margin-top:40px;font-size:12px;color:rgba(241,242,242,0.5);max-width:460px;">
+          Do not share sensitive credentials via email. Secure channels will be provided if required.
+        </p>
+
+      </div>
+
+      <!-- Footer -->
+      <div style="padding:20px;border-top:1px solid rgba(241,242,242,0.08);font-size:12px;color:rgba(241,242,242,0.4);">
+        © ${new Date().getFullYear()} Volasec<br/>
+        ${SITE_URL}
+      </div>
+
+    </div>
+  </div>
+
 </body>
 </html>
   `;

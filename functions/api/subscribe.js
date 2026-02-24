@@ -59,9 +59,9 @@ export async function onRequestPost(context) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "Volasec <contact@services.volasec.com>",
+        from: "Volasec Newsletters <newsletter@services.volasec.com>",
         to: email,
-        subject: "Confirm your subscription — Volasec",
+        subject: "Confirm your newsletter subscription — Volasec",
         html: confirmationEmailHtml({ confirmUrl }), // ← CALL the function here
       }),
     });
@@ -96,6 +96,7 @@ function confirmationEmailHtml({ confirmUrl }) {
   const LOGO_URL = "https://volasecj.pages.dev/monologo.png";
 
   return `
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -103,34 +104,53 @@ function confirmationEmailHtml({ confirmUrl }) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Confirm Subscription</title>
 </head>
-<body style="margin:0;padding:0;background:#F1F2F2;font-family:Helvetica,Arial,sans-serif;color:#0C0C0C;">
-  <div style="padding:24px;">
-    <div style="max-width:680px;margin:0 auto;background:#fff;border-radius:18px;overflow:hidden;">
-      
-      <!-- Header -->
-      <div style="padding:18px 22px;background:#0E1A2B;text-align:center;">
-        <img src="${LOGO_URL}" alt="Volasec Logo" height="22" />
+
+<body style="margin:0;padding:0;background:#F3F5F7;font-family:Helvetica,Arial,sans-serif;color:#0E1A2B;">
+
+  <div style="padding:40px 20px;">
+    <div style="max-width:680px;margin:0 auto;background:#FFFFFF;border:1px solid rgba(14,26,43,0.08);border-radius:16px;overflow:hidden;">
+
+      <!-- HEADER -->
+      <div style="padding:26px 28px;border-bottom:1px solid rgba(14,26,43,0.06);background:#FFFFFF;">
+        <img src="https://volasecj.pages.dev/monoblue.png" alt="Volasec Logo" height="22" />
       </div>
 
-      <!-- Body -->
-      <div style="padding:28px;text-align:center;">
-        <h1 style="font-size:22px;font-weight:900;margin:0 0 12px;">Confirm Your Subscription</h1>
-        <p style="font-size:14px;line-height:1.7;margin-bottom:18px;">
-          Click the button below to confirm your email and start receiving exclusive security insights from Volasec.
+      <!-- BODY -->
+      <div style="padding:48px 40px;">
+
+        <div style="width:60px;height:3px;background:#0E1A2B;margin-bottom:28px;"></div>
+
+        <h1 style="font-size:26px;font-weight:800;letter-spacing:-0.5px;margin:0 0 18px 0;color:#0E1A2B;">
+          Confirm your subscription
+        </h1>
+
+        <p style="font-size:15px;line-height:1.7;color:rgba(14,26,43,0.75);margin-bottom:32px;max-width:520px;">
+          You requested access to Volasec security intelligence.  
+          Please confirm your email address to begin receiving cloud security insights engineered for enterprise environments.
         </p>
+
         <a href="${escapeHtml(confirmUrl)}"
-           style="display:inline-block;padding:14px 28px;background:#0E1A2B;color:#fff;text-decoration:none;border-radius:999px;font-weight:800;font-size:14px;">
-          Confirm Subscription
+           style="display:inline-block;padding:14px 30px;background:#0E1A2B;color:#FFFFFF;text-decoration:none;font-weight:700;font-size:13px;letter-spacing:0.8px;border-radius:999px;">
+           Confirm Subscription
         </a>
+
+        <p style="margin-top:36px;font-size:12px;color:rgba(14,26,43,0.55);max-width:480px;">
+          If you did not request this subscription, you can safely ignore this email.
+        </p>
+
       </div>
 
-      <!-- Footer -->
-      <div style="padding:16px;text-align:center;font-size:12px;color:#666;">
-        © ${new Date().getFullYear()} Volasec — <a href="${SITE_URL}" target="_blank" style="color:#666;text-decoration:underline;">${SITE_URL}</a>
+      <!-- FOOTER -->
+      <div style="padding:20px 28px;border-top:1px solid rgba(14,26,43,0.06);font-size:12px;color:rgba(14,26,43,0.5);background:#FAFBFC;">
+        © ${new Date().getFullYear()} Volasec<br/>
+        <a href="${SITE_URL}" target="_blank" style="color:#0E1A2B;text-decoration:none;font-weight:600;">
+          ${SITE_URL}
+        </a>
       </div>
 
     </div>
   </div>
+
 </body>
 </html>
 `;

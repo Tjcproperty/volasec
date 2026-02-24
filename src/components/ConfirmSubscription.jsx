@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function ConfirmSubscription() {
+const API_URL = "https://subscribe.volasec.com/confirm";
+
+export default function ConfirmSubscription({ logoSrc = "/Iconwhite.png" }) {
   const [status, setStatus] = useState("loading");
   const [message, setMessage] = useState("");
 
@@ -19,7 +21,7 @@ export default function ConfirmSubscription() {
 
     async function confirm() {
       try {
-        const res = await fetch(`https://subscribe.volasec.com/confirm?token=${token}`);
+        const res = await fetch(`${API_URL}?token=${token}`);
         const data = await res.json();
 
         if (!res.ok) {
@@ -29,164 +31,135 @@ export default function ConfirmSubscription() {
           setStatus("success");
           setMessage(data.message || "Your subscription is confirmed!");
         }
-      } catch (err) {
-        console.error(err);
+      } catch {
         setStatus("error");
-        setMessage("An unexpected error occurred. Please try again.");
+        setMessage("Unexpected error. Please try again.");
       }
     }
 
     confirm();
   }, []);
 
+  /* 🔹 Same subtle logo pattern logic as footer */
+  const bgMarks = useMemo(
+    () => [
+      { top: "12%", left: "6%", size: 30, opacity: 0.05, rotate: -8 },
+      { top: "22%", right: "10%", size: 28, opacity: 0.05, rotate: 10 },
+      { top: "46%", left: "16%", size: 34, opacity: 0.08, rotate: 6 },
+      { bottom: "28%", right: "12%", size: 38, opacity: 0.12, rotate: -10 },
+      { bottom: "16%", left: "30%", size: 42, opacity: 0.14, rotate: 8 },
+    ],
+    [],
+  );
+
   return (
-    <div className="min-h-screen bg-secondary flex items-center justify-center p-6 font-sans">
+    <div className="relative min-h-screen bg-dark overflow-hidden flex items-center justify-center px-6">
+
+      {/* Logo texture */}
+      <div className="pointer-events-none absolute inset-0">
+        {bgMarks.map((m, i) => (
+          <img
+            key={i}
+            src={logoSrc}
+            alt=""
+            aria-hidden="true"
+            className="absolute select-none"
+            style={{
+              top: m.top,
+              left: m.left,
+              right: m.right,
+              bottom: m.bottom,
+              width: m.size,
+              height: m.size,
+              opacity: m.opacity,
+              transform: `rotate(${m.rotate}deg)`,
+              filter: "contrast(1.1) brightness(1.05)",
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Accent glows */}
+      <div className="pointer-events-none absolute -top-32 right-0 h-96 w-96 bg-primary-30 blur-[160px] opacity-20" />
+      <div className="pointer-events-none absolute -bottom-32 left-0 h-96 w-96 bg-secondary-30 blur-[160px] opacity-10" />
+
       <AnimatePresence mode="wait">
+        <motion.div
+          key={status}
+          initial={{ opacity: 0, y: 30, filter: "blur(6px)" }}
+          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          exit={{ opacity: 0, y: -30 }}
+          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          className="relative z-10 w-full max-w-xl border border-secondary-10 bg-primary/20 backdrop-blur-sm p-12"
+        >
+          {/* Top logo */}
+          <div className="mb-10 flex justify-center">
+            <img src={logoSrc} className="h-16" alt="Volasec" />
+          </div>
 
-        {/* Loading */}
-        {status === "loading" && (
-          <motion.div
-            key="loading"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            className="flex flex-col items-center gap-5 text-center"
-          >
-            {/* Spinner */}
-            <div className="relative w-16 h-16">
-              <div className="absolute inset-0 rounded-full border-2 border-primary/10" />
-              <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-primary animate-spin" />
-              <div className="absolute inset-2 rounded-full bg-primary/5" />
-            </div>
-            <div>
-              <p className="text-xs font-semibold tracking-[0.25em] uppercase text-primary/40 mb-1">
-                Please wait
+          {status === "loading" && (
+            <div className="text-center">
+              <div className="w-14 h-14 border-2 border-secondary/20 border-t-secondary animate-spin mx-auto mb-6" />
+              <p className="text-[11px] tracking-[0.3em] uppercase text-secondary/40 mb-3">
+                SECURITY VERIFICATION
               </p>
-              <p className="text-lg font-bold text-dark">Confirming your subscription…</p>
-            </div>
-          </motion.div>
-        )}
-
-        {/* Success */}
-        {status === "success" && (
-          <motion.div
-            key="success"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -16 }}
-            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className="relative w-full max-w-md bg-white border border-primary/10 rounded-3xl p-10 text-center overflow-hidden shadow-xl shadow-primary/5"
-          >
-            {/* Background orb */}
-            <div className="absolute -top-16 -right-16 w-56 h-56 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute -bottom-16 -left-16 w-56 h-56 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
-
-            {/* Icon */}
-            <motion.div
-              initial={{ scale: 0.5, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.15, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-primary/20"
-            >
-              <svg className="w-8 h-8 text-primary-foreground" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-              </svg>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.25, duration: 0.4 }}
-            >
-              <p className="text-[11px] font-semibold tracking-[0.25em] uppercase text-primary/40 mb-2">
-                All done
-              </p>
-              <h1 className="text-2xl font-black text-dark tracking-tight mb-3">
-                You're confirmed!
+              <h1 className="text-2xl font-black text-secondary">
+                Confirming Access…
               </h1>
-              <p className="text-sm text-dark/50 leading-relaxed mb-8">
+            </div>
+          )}
+
+          {status === "success" && (
+            <div className="text-center">
+              <p className="text-[11px] tracking-[0.3em] uppercase text-secondary/40 mb-3">
+                ACCESS GRANTED
+              </p>
+              <h1 className="text-3xl font-black text-secondary mb-4">
+                Subscription Confirmed
+              </h1>
+              <p className="text-secondary/60 text-sm leading-relaxed">
                 {message}
               </p>
-
-              <div className="w-full h-px bg-primary/8 mb-8" />
 
               <a
                 href="/"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-xl font-bold text-sm hover:bg-primary-80 transition-all duration-200 active:scale-95"
+                className="inline-block mt-8 px-8 py-4 border-2 border-secondary text-secondary font-black text-xs tracking-wider hover:bg-secondary hover:text-dark transition-all duration-200"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-                </svg>
-                Back to site
+                RETURN TO SITE
               </a>
-            </motion.div>
-          </motion.div>
-        )}
+            </div>
+          )}
 
-        {/* Error */}
-        {status === "error" && (
-          <motion.div
-            key="error"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -16 }}
-            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className="relative w-full max-w-md bg-white border border-primary/10 rounded-3xl p-10 text-center overflow-hidden shadow-xl shadow-primary/5"
-          >
-            {/* Background orb */}
-            <div className="absolute -top-16 -right-16 w-56 h-56 bg-dark/3 rounded-full blur-3xl pointer-events-none" />
-
-            {/* Icon */}
-            <motion.div
-              initial={{ scale: 0.5, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.15, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="w-16 h-16 bg-dark/8 border border-dark/10 rounded-2xl flex items-center justify-center mx-auto mb-6"
-            >
-              <svg className="w-8 h-8 text-dark/50" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.25, duration: 0.4 }}
-            >
-              <p className="text-[11px] font-semibold tracking-[0.25em] uppercase text-dark/30 mb-2">
-                Something went wrong
+          {status === "error" && (
+            <div className="text-center">
+              <p className="text-[11px] tracking-[0.3em] uppercase text-secondary/40 mb-3">
+                VERIFICATION FAILED
               </p>
-              <h1 className="text-2xl font-black text-dark tracking-tight mb-3">
-                Confirmation failed
+              <h1 className="text-3xl font-black text-secondary mb-4">
+                Confirmation Error
               </h1>
-              <p className="text-sm text-dark/50 leading-relaxed mb-8">
+              <p className="text-secondary/60 text-sm leading-relaxed">
                 {message}
               </p>
 
-              <div className="w-full h-px bg-primary/8 mb-8" />
-
-              <div className="flex items-center justify-center gap-3">
+              <div className="mt-8 flex justify-center gap-4">
                 <button
                   onClick={() => window.location.reload()}
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-xl font-bold text-sm hover:bg-primary-80 transition-all duration-200 active:scale-95"
+                  className="px-8 py-4 border-2 border-secondary text-secondary font-black text-xs tracking-wider hover:bg-secondary hover:text-dark transition-all duration-200"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
-                  Try again
+                  RETRY
                 </button>
+
                 <a
                   href="/"
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-primary/8 text-dark rounded-xl font-bold text-sm hover:bg-primary/15 transition-all duration-200 active:scale-95"
+                  className="px-8 py-4 border border-secondary/20 text-secondary/60 text-xs tracking-wider hover:border-secondary hover:text-secondary transition-all duration-200"
                 >
-                  Go home
+                  HOME
                 </a>
               </div>
-            </motion.div>
-          </motion.div>
-        )}
-
+            </div>
+          )}
+        </motion.div>
       </AnimatePresence>
     </div>
   );
