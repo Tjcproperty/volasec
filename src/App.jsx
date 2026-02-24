@@ -30,7 +30,7 @@ function App() {
             path="/subscribers"
             element={
               <>
-                <Header />
+                {/* <Header /> */}
                 <SubscribersList />
                 <Footer />
               </>

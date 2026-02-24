@@ -82,7 +82,7 @@ function inboxEmailHtml({ name, email, company, message }) {
   const LOGO_URL = "https://volasecj.pages.dev/monoblue.png"; // ✅ absolute URL
   const SUPPORT_HOURS = "Monday – Friday, 9:00 AM – 5:00 PM (GMT)";
 
-  return `
+return `
 <!doctype html>
 <html lang="en">
 <head>
@@ -93,9 +93,9 @@ function inboxEmailHtml({ name, email, company, message }) {
   body{
     margin:0;
     padding:0;
-    background:#0C0C0C;
+    background:#F1F2F2; /* light background */
     font-family:Helvetica,Arial,sans-serif;
-    color:#F1F2F2;
+    color:#0C0C0C; /* dark text */
   }
   table{border-collapse:collapse;}
   img{display:block;border:0;outline:none;}
@@ -103,14 +103,14 @@ function inboxEmailHtml({ name, email, company, message }) {
   .card{
     max-width:680px;
     margin:0 auto;
-    background:linear-gradient(180deg,#0C0C0C 0%,#0E1A2B 100%);
-    border:1px solid rgba(12,12,12,0.75);
+    background:linear-gradient(180deg,#F1F2F2 0%,#E0E4E6 100%); /* lighter gradient */
+    border:1px solid rgba(241,242,242,0.75);
     border-radius:18px;
     overflow:hidden;
   }
   .head{
     padding:18px 22px;
-    border-bottom:1px solid rgba(12,12,12,0.75);
+    border-bottom:1px solid rgba(241,242,242,0.75);
   }
   .pill{
     font-size:11px;
@@ -118,47 +118,47 @@ function inboxEmailHtml({ name, email, company, message }) {
     text-transform:uppercase;
     padding:8px 12px;
     border-radius:999px;
-    border:1px solid rgba(241,242,242,.18);
-    background:rgba(241,242,242,.06);
-    color:#F1F2F2;
+    border:1px solid rgba(12,12,12,.18);
+    background:rgba(12,12,12,.06);
+    color:#0C0C0C;
   }
   .p{padding:22px;}
   .label{
     font-size:12px;
     letter-spacing:.14em;
     text-transform:uppercase;
-    color:rgba(241,242,242,.45);
+    color:rgba(12,12,12,.45);
     margin-bottom:8px;
   }
   .value{
     font-size:15px;
     line-height:1.65;
-    color:#F1F2F2;
+    color:#0C0C0C;
   }
   .row{
     padding:14px 0;
-    border-bottom:1px solid rgba(12,12,12,0.75);
+    border-bottom:1px solid rgba(241,242,242,0.75);
   }
   .row:last-child{border-bottom:none;}
   .msg{
     margin-top:10px;
     padding:16px;
     border-radius:14px;
-    background:rgba(241,242,242,.04);
-    border:1px solid rgba(241,242,242,.12);
+    background:rgba(12,12,12,.04);
+    border:1px solid rgba(12,12,12,.12);
     white-space:pre-wrap;
   }
   .muted{
-    color:rgba(241,242,242,.55);
+    color:rgba(12,12,12,.55);
     font-size:12px;
     line-height:1.6;
   }
   .foot{
     padding:16px 22px;
-    border-top:1px solid rgba(12,12,12,0.75);
+    border-top:1px solid rgba(241,242,242,0.75);
     text-align:center;
   }
-  a{color:#F1F2F2;text-decoration:none;font-weight:700;}
+  a{color:#0C0C0C;text-decoration:none;font-weight:700;}
 </style>
 </head>
 <body>
@@ -228,7 +228,7 @@ function inboxEmailHtml({ name, email, company, message }) {
   </table>
 </body>
 </html>
-  `;
+`;
 }
 
 function autoReplyHtml({ name, CAL_URL }) {
