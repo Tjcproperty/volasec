@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import { toast, Toaster } from "react-hot-toast";
 
 export default function BulkNewsletter() {
   const [subscribers, setSubscribers] = useState([]);
@@ -19,6 +20,8 @@ export default function BulkNewsletter() {
   const [testEmail, setTestEmail] = useState("");
   const [sendingTest, setSendingTest] = useState(false);
   const [smallFont, setSmallFont] = useState(false);
+
+  const [sendStatus, setSendStatus] = useState([]); // {email, status, details}
 
   const LOGO_URL = "https://volasecj.pages.dev/monoblue.png";
   const SITE_URL = "https://volasec.com";
@@ -39,6 +42,7 @@ export default function BulkNewsletter() {
       setSubscribers(list);
     } catch (err) {
       console.error("Failed to fetch subscribers", err);
+      toast.error("Failed to load subscribers");
       setSubscribers([]);
     } finally {
       setLoading(false);
@@ -88,48 +92,88 @@ export default function BulkNewsletter() {
       </div>
     `;
   };
-
-  // Bulk send
   const handleSend = async () => {
-    if (!customized) return alert("Enable 'Customized Newsletter' first!");
+    if (!customized)
+      return toast.error("Enable 'Customized Newsletter' first!");
     if (!title.trim() || !message.trim())
-      return alert("Title and message are required!");
+      return toast.error("Title and message are required!");
 
     setSending(true);
 
-    // Prepare subscriber emails with personalized HTML
-    const emailsToSend = filteredSubscribers.map((sub) => ({
-      email: sub.email,
-      name: sub.name,
-      html: composeEmailHtml(sub.name),
-    }));
+    // Only send subscribers + top-level html and title
+    const payload = {
+      subscribers: filteredSubscribers.map((sub) => ({
+        email: sub.email,
+        name: sub.name,
+      })),
+      title,
+      html: composeEmailHtml("Subscriber"), // send placeholder {{name}} replaced in backend
+    };
 
     try {
       const res = await fetch("/api/bulk-newsletter", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          subscribers: emailsToSend,
-          title,
-          html: composeEmailHtml("Subscriber"), // ✅ top-level HTML required by your handler
-        }),
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
-      console.log("Bulk send result:", data);
-      alert(`Newsletter sent to ${emailsToSend.length} subscribers!`);
+
+      if (res.ok) {
+        toast.success("Newsletter sent!");
+        console.log("Results:", data.results); // each email status
+        setSendStatus(data.results.map((r) => ({ ...r })));
+      } else {
+        toast.error(data.error || "Failed to send newsletter");
+      }
     } catch (err) {
-      console.error("Failed to send newsletter:", err);
-      alert("Failed to send newsletter. See console for details.");
+      console.error(err);
+      toast.error("Failed to send newsletter");
     } finally {
       setSending(false);
     }
   };
-  // Test send
+
+  const retryEmail = async (emailObj) => {
+    const { email, name, html } = emailObj;
+    setSendStatus((prev) =>
+      prev.map((s) => (s.email === email ? { ...s, status: "pending" } : s)),
+    );
+
+    try {
+      const res = await fetch("/api/bulk-newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ subscribers: [emailObj], title, html }),
+      });
+
+      const data = await res.json();
+      setSendStatus((prev) =>
+        prev.map((s) =>
+          s.email === email
+            ? {
+                ...s,
+                status: res.ok ? "sent" : "failed",
+                details: res.ok ? null : data.error || data,
+              }
+            : s,
+        ),
+      );
+    } catch (err) {
+      setSendStatus((prev) =>
+        prev.map((s) =>
+          s.email === email
+            ? { ...s, status: "error", details: err.message }
+            : s,
+        ),
+      );
+    }
+  };
+
   const handleSendTest = async () => {
-    if (!testEmail.trim()) return alert("Enter a test email!");
+    if (!testEmail.trim()) return toast.error("Enter a test email!");
     if (!title.trim() || !message.trim())
-      return alert("Title and message are required!");
+      return toast.error("Title and message are required!");
 
     setSendingTest(true);
     try {
@@ -143,12 +187,12 @@ export default function BulkNewsletter() {
         }),
       });
       const data = await res.json();
-      alert(
-        data.status === "sent" ? "Test email sent!" : `Failed: ${data.error}`,
-      );
+      data.status === "sent"
+        ? toast.success("Test email sent!")
+        : toast.error(data.error || "Failed");
     } catch (err) {
       console.error(err);
-      alert("Failed to send test email");
+      toast.error("Failed to send test email");
     } finally {
       setSendingTest(false);
     }
@@ -156,6 +200,7 @@ export default function BulkNewsletter() {
 
   return (
     <div className="p-8 bg-secondary/5 min-h-screen">
+      <Toaster position="top-right" />
       <div className="flex flex-col sm:flex-row sm:justify-between items-center mb-6 gap-4">
         <h1 className="text-3xl font-extrabold text-dark">Bulk Newsletter</h1>
         <div className="flex items-center gap-3">
@@ -174,6 +219,7 @@ export default function BulkNewsletter() {
         </div>
       </div>
 
+      {/* Filters */}
       <div className="flex gap-3 mb-6">
         {["all", "confirmed", "pending"].map((f) => (
           <button
@@ -190,6 +236,7 @@ export default function BulkNewsletter() {
         ))}
       </div>
 
+      {/* Subscribers */}
       <div className="mb-6 max-h-64 overflow-auto border border-primary-20 rounded-lg p-4 bg-secondary">
         {filteredSubscribers.length === 0 && (
           <p className="text-dark/50">No subscribers in this category.</p>
@@ -266,6 +313,7 @@ export default function BulkNewsletter() {
             Use smaller font
           </label>
 
+          {/* Test Email */}
           <div className="mb-4 flex gap-3 items-center">
             <input
               type="email"
@@ -287,16 +335,18 @@ export default function BulkNewsletter() {
             </button>
           </div>
 
+          {/* Preview */}
           <div className="mb-6">
             <h3 className="font-bold text-dark mb-2">Preview:</h3>
             <div
-              className="p-4 border border-primary-30 rounded-lg bg-secondary text-dark max-h-96 overflow-auto"
+              className="p-4 border border-primary-30 rounded-lg bg-white text-dark max-h-96 overflow-auto"
               dangerouslySetInnerHTML={{
                 __html: composeEmailHtml("Subscriber"),
               }}
             />
           </div>
 
+          {/* Send */}
           <button
             className={`px-6 py-3 rounded-lg font-semibold transition-colors duration-300 ${
               sending
@@ -308,6 +358,44 @@ export default function BulkNewsletter() {
           >
             {sending ? "Sending..." : "Send Newsletter"}
           </button>
+
+          {/* Real-time send status */}
+          {sendStatus.length > 0 && (
+            <div className="mt-6 border-t pt-4">
+              <h3 className="font-bold text-dark mb-2">Send Status:</h3>
+              <ul className="space-y-2 max-h-64 overflow-auto">
+                {sendStatus.map((s) => (
+                  <li
+                    key={s.email}
+                    className="flex justify-between items-center"
+                  >
+                    <span>{s.email}</span>
+                    <span className="flex gap-2 items-center">
+                      <span
+                        className={`text-xs px-2 py-1 rounded-full ${
+                          s.status === "sent"
+                            ? "bg-green-100 text-green-800"
+                            : s.status === "pending"
+                              ? "bg-yellow-100 text-yellow-800"
+                              : "bg-red-100 text-red-800"
+                        }`}
+                      >
+                        {s.status.toUpperCase()}
+                      </span>
+                      {["failed", "error"].includes(s.status) && (
+                        <button
+                          onClick={() => retryEmail(s)}
+                          className="text-sm text-primary underline"
+                        >
+                          Retry
+                        </button>
+                      )}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </>
       )}
     </div>
