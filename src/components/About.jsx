@@ -33,7 +33,7 @@ function About() {
             />
 
              <SectionBadge
-                                  label="What We Do"
+                                  label="Who We Are"
                                   className="mb-6 text-secondary-50 border-secondary-30"
                                 />  
 

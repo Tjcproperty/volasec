@@ -108,7 +108,9 @@ export default function ContactSection({ dark = false }) {
         <div className="mb-12">
           <SectionBadge
             label="Get in Touch"
-            className={dark ? "text-secondary-50 border-secondary-30" : "text-dark-80"}
+            className={
+              dark ? "text-secondary-50 border-secondary-30" : "text-dark-80"
+            }
           />
           <BlurRevealHeading
             text="Let's Discuss Your Security"
@@ -129,12 +131,12 @@ export default function ContactSection({ dark = false }) {
               </p>
             </div>
 
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
               {callOptions.map((option) => (
                 <button
                   key={option.id}
                   onClick={() => setCallType(option.id)}
-                  className={`p-3 border-2 text-left transition-all duration-300 ${
+                  className={`p-3 border-2 text-left transition-all duration-300 rounded-lg ${
                     callType === option.id
                       ? "border-primary bg-primary text-secondary"
                       : `border-primary-30 ${cardBg} ${textPrimary} hover:border-primary`
@@ -160,10 +162,17 @@ export default function ContactSection({ dark = false }) {
                 <Cal
                   namespace={callType}
                   calLink={selectedCall.calLink}
-                  style={{ width: "100%", height: "100%" }}
+                  // style={{ width: "100%", height: "100%" }}
+                  // config={{
+                  //   layout: "month_view",
+                  //   useSlotsViewOnSmallScreen: "true",
+                  // }}
+                  style={{ width: "100%", height: "100%", minHeight: "500px" }}
                   config={{
                     layout: "month_view",
                     useSlotsViewOnSmallScreen: "true",
+                    theme: "light", // "light" | "dark"
+                    brandColor: "primary",
                   }}
                 />
               </motion.div>
@@ -193,9 +202,24 @@ export default function ContactSection({ dark = false }) {
 
             <form onSubmit={onSubmit} className="space-y-6">
               {[
-                { key: "name", label: "Name", type: "text", placeholder: "John Doe" },
-                { key: "email", label: "Email", type: "email", placeholder: "john@company.com" },
-                { key: "company", label: "Company", type: "text", placeholder: "Company name (optional)" },
+                {
+                  key: "name",
+                  label: "Name",
+                  type: "text",
+                  placeholder: "John Doe",
+                },
+                {
+                  key: "email",
+                  label: "Email",
+                  type: "email",
+                  placeholder: "john@company.com",
+                },
+                {
+                  key: "company",
+                  label: "Company",
+                  type: "text",
+                  placeholder: "Company name (optional)",
+                },
               ].map((field) => (
                 <div key={field.key}>
                   <label
@@ -261,7 +285,9 @@ export default function ContactSection({ dark = false }) {
             </form>
 
             <div className={`mt-8 pt-6 border-t ${cardBorder}`}>
-              <div className={`flex items-center gap-2 text-sm ${textSecondary}`}>
+              <div
+                className={`flex items-center gap-2 text-sm ${textSecondary}`}
+              >
                 <svg
                   className="w-4 h-4"
                   fill="currentColor"

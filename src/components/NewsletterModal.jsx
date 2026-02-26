@@ -28,7 +28,12 @@ function cx(...c) {
 
 const ease = [0.22, 1, 0.36, 1];
 
-export default function NewsletterModal({ isOpen, onClose, onSubscribed, onPending }) {
+export default function NewsletterModal({
+  isOpen,
+  onClose,
+  onSubscribed,
+  onPending,
+}) {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState("idle");
   const [errorMessage, setErrorMessage] = useState("");
@@ -44,7 +49,7 @@ export default function NewsletterModal({ isOpen, onClose, onSubscribed, onPendi
         setEmail("");
         setStatus("idle");
         setErrorMessage("");
-      }, 3000);
+      }, 300);
     }
   }, [isOpen]);
 
@@ -63,11 +68,14 @@ export default function NewsletterModal({ isOpen, onClose, onSubscribed, onPendi
     setStatus("loading");
 
     try {
-      const volasecRes = await fetch("https://subscribe.volasec.com/subscribers", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, source: "landing_page" }),
-      });
+      const volasecRes = await fetch(
+        "https://subscribe.volasec.com/subscribers",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, source: "landing_page" }),
+        },
+      );
 
       const volasecData = await volasecRes.json();
 
@@ -123,7 +131,6 @@ export default function NewsletterModal({ isOpen, onClose, onSubscribed, onPendi
               onClick={(e) => e.stopPropagation()}
             >
               <div className="relative bg-secondary rounded-2xl overflow-hidden shadow-2xl">
-
                 {/* Top accent line */}
                 <div className="h-1 w-full bg-gradient-to-r from-primary via-primary/60 to-primary/20" />
 
@@ -132,8 +139,18 @@ export default function NewsletterModal({ isOpen, onClose, onSubscribed, onPendi
                   onClick={onClose}
                   className="absolute top-5 right-5 w-8 h-8 flex items-center justify-center text-primary/40 hover:text-primary transition-colors z-10"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
 
@@ -145,8 +162,18 @@ export default function NewsletterModal({ isOpen, onClose, onSubscribed, onPendi
                     transition={{ delay: 0.1, duration: 0.4, ease }}
                     className="w-12 h-12 bg-primary/10 flex items-center justify-center mb-6"
                   >
-                    <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    <svg
+                      className="w-6 h-6 text-primary"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                      />
                     </svg>
                   </motion.div>
 
@@ -242,8 +269,16 @@ export default function NewsletterModal({ isOpen, onClose, onSubscribed, onPendi
 
                     {/* Privacy note */}
                     <div className="flex items-center gap-2 pt-1">
-                      <svg className="w-3.5 h-3.5 text-primary/30 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                      <svg
+                        className="w-3.5 h-3.5 text-primary/30 shrink-0"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                          clipRule="evenodd"
+                        />
                       </svg>
                       <p className="text-[11px] text-primary/30">
                         {SUBSCRIPTION_CONTENT.privacyNote}

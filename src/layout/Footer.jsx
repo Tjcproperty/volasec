@@ -1,19 +1,12 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { scrollToSection } from "./Header";
 
-function cx(...c) {
-  return c.filter(Boolean).join(" ");
-}
-
-const onScroll = (id) => (e) => {
-  e.preventDefault();
-  scrollToSection(id);
-};
+const ease = [0.22, 1, 0.36, 1];
 
 const footerVariants = {
   hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } },
+  show: { opacity: 1, transition: { duration: 0.5, ease } },
 };
 
 const colsVariants = {
@@ -22,21 +15,81 @@ const colsVariants = {
 };
 
 const colVariants = {
-  hidden: { opacity: 0, y: 14, filter: "blur(6px)" },
-  show: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] } },
+  hidden: { opacity: 0, y: 14 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease } },
 };
 
-const linkListVariants = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.06, delayChildren: 0.05 } },
-};
-
-const linkItemVariants = {
-  hidden: { opacity: 0, y: 8 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] } },
+const onScroll = (id) => (e) => {
+  e.preventDefault();
+  scrollToSection(id);
 };
 
 export default function Footer({ logoSrc = "/Icon dark mono@3x.png" }) {
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState("idle"); // idle | loading | success | error
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const validateEmail = (value) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setErrorMessage("");
+
+    if (!validateEmail(email)) {
+      setStatus("error");
+      setErrorMessage("Please enter a valid email address.");
+      return;
+    }
+
+    setStatus("loading");
+
+    try {
+      // STEP 1: Register subscriber
+      const volasecRes = await fetch(
+        "https://subscribe.volasec.com/subscribers",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, source: "landing_page" }),
+        }
+      );
+
+      const volasecData = await volasecRes.json();
+
+      if (!volasecRes.ok) {
+        if (volasecRes.status === 409) {
+          setStatus("error");
+          setErrorMessage("This email is already subscribed.");
+          return;
+        }
+        throw new Error(volasecData.message || "Subscription failed");
+      }
+
+      // STEP 2: Get confirmation token
+      const token = volasecData.token;
+      if (!token) throw new Error("No confirmation token returned");
+
+      // STEP 3: Send confirmation email
+      const confirmRes = await fetch("/api/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, token }),
+      });
+
+      if (!confirmRes.ok) throw new Error("Confirmation email failed");
+
+      // ✅ Only after confirmation email is sent
+      setStatus("success");
+      setEmail("");
+
+    } catch (err) {
+      console.error("Subscription error:", err);
+      setStatus("error");
+      setErrorMessage("Something went wrong. Please try again.");
+    }
+  };
+
   const columns = [
     {
       title: "Services",
@@ -66,20 +119,11 @@ export default function Footer({ logoSrc = "/Icon dark mono@3x.png" }) {
 
   const bgMarks = useMemo(
     () => [
-      { top: "10%", left: "4%", size: 28, opacity: 0.06, rotate: -10 },
-      { top: "18%", right: "8%", size: 26, opacity: 0.05, rotate: 12 },
-      { top: "34%", left: "12%", size: 30, opacity: 0.06, rotate: 8 },
-      { top: "46%", right: "2%", size: 24, opacity: 0.05, rotate: -12 },
-      { bottom: "28%", left: "6%", size: 26, opacity: 0.06, rotate: 10 },
-      { bottom: "14%", right: "16%", size: 28, opacity: 0.05, rotate: -8 },
-      { bottom: "6%", left: "22%", size: 22, opacity: 0.05, rotate: 14 },
-      { top: "26%", left: "44%", size: 34, opacity: 0.12, rotate: -8 },
-      { top: "56%", right: "28%", size: 32, opacity: 0.13, rotate: 10 },
-      { bottom: "18%", right: "6%", size: 36, opacity: 0.14, rotate: 8 },
-      { top: "40%", right: "12%", size: 44, opacity: 0.18, rotate: -10 },
-      { bottom: "34%", left: "28%", size: 42, opacity: 0.17, rotate: 12 },
+      { top: "10%", left: "4%", size: 28, opacity: 0.06 },
+      { top: "18%", right: "8%", size: 26, opacity: 0.05 },
+      { bottom: "18%", right: "6%", size: 36, opacity: 0.14 },
     ],
-    [],
+    []
   );
 
   return (
@@ -87,18 +131,18 @@ export default function Footer({ logoSrc = "/Icon dark mono@3x.png" }) {
       variants={footerVariants}
       initial="hidden"
       whileInView="show"
-      viewport={{ once: true, amount: 0.3 }}
-      className="relative overflow-hidden bg-gradient-to-b from-secondary-30/30 via-secondary-30/20 to-primary/40 border-t border-primary/40 py-12 sm:py-14"
+      viewport={{ once: true }}
+      className="relative overflow-hidden bg-gradient-to-b from-secondary-30/30 via-secondary-30/20 to-primary/40 border-t border-primary/40 py-14"
     >
-      {/* Logo marks */}
-      <div className="pointer-events-none absolute inset-0 -z-0">
+      {/* Background marks */}
+      <div className="pointer-events-none absolute inset-0">
         {bgMarks.map((m, i) => (
           <img
             key={i}
             src={logoSrc}
             alt=""
             aria-hidden="true"
-            className="absolute select-none"
+            className="absolute"
             style={{
               top: m.top,
               left: m.left,
@@ -107,73 +151,95 @@ export default function Footer({ logoSrc = "/Icon dark mono@3x.png" }) {
               width: m.size,
               height: m.size,
               opacity: m.opacity,
-              transform: `rotate(${m.rotate}deg)`,
-              filter: "contrast(1.12) brightness(0.9)",
             }}
           />
         ))}
       </div>
 
-      {/* Accents */}
-      <div className="pointer-events-none absolute -top-24 right-0 h-72 w-72 bg-primary/40 blur-[140px] opacity-30" />
-      <div className="pointer-events-none absolute -bottom-24 left-0 h-72 w-72 bg-primary/40 blur-[140px] opacity-20" />
-
-      <div className="relative z-10 mx-auto max-w-7xl px-5 sm:px-8 lg:px-16 xl:px-24">
-        <motion.div variants={colsVariants} className="grid gap-10 mb-10 md:grid-cols-4">
-
+      <div className="relative z-10 mx-auto max-w-7xl px-6">
+        <motion.div
+          variants={colsVariants}
+          className="grid gap-10 mb-10 md:grid-cols-5"
+        >
           {/* Logo */}
-          <motion.div variants={colVariants} className="flex items-start">
-            <img src={logoSrc} className="h-14 sm:h-16 md:h-20" alt="VolaSec" />
+          <motion.div variants={colVariants}>
+            <img src={logoSrc} className="h-16" alt="VolaSec" />
           </motion.div>
 
+          {/* Columns */}
           {columns.map((col, i) => (
             <motion.div key={i} variants={colVariants}>
-              <h4 className="mb-4 text-[11px] sm:text-xs font-black tracking-wider text-primary">
+              <h4 className="mb-4 text-xs font-black tracking-wider text-primary">
                 {col.title}
               </h4>
-
-              <motion.ul
-                variants={linkListVariants}
-                className="space-y-2"
-                initial="hidden"
-                whileInView="show"
-                viewport={{ once: true, amount: 0.4 }}
-              >
-                {col.links.map((item, j) => (
-                  <motion.li key={j} variants={linkItemVariants}>
-                    {item.id ? (
+              <ul className="space-y-2">
+                {col.links.map((item, j) =>
+                  item.id ? (
+                    <li key={j}>
                       <button
                         onClick={onScroll(item.id)}
-                        className={cx(
-                          "text-sm sm:text-xs font-light",
-                          "text-primary/50 hover:text-primary",
-                          "transition-colors duration-200",
-                          "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-secondary",
-                        )}
+                        className="text-sm font-light text-primary/50 hover:text-primary transition-colors duration-200"
                       >
                         {item.label}
                       </button>
-                    ) : (
+                    </li>
+                  ) : (
+                    <li key={j}>
                       <a
                         href={item.href}
-                        className={cx(
-                          "text-sm sm:text-xs font-light",
-                          "text-primary/50 hover:text-primary",
-                          "transition-colors duration-200",
-                        )}
+                        className="text-sm font-light text-primary/50 hover:text-primary transition-colors duration-200"
                       >
                         {item.label}
                       </a>
-                    )}
-                  </motion.li>
-                ))}
-              </motion.ul>
+                    </li>
+                  )
+                )}
+              </ul>
             </motion.div>
           ))}
+
+          {/* Newsletter */}
+          <motion.div variants={colVariants}>
+            <h4 className="mb-4 text-xs font-black tracking-wider text-primary">
+              Newsletter
+            </h4>
+            <form onSubmit={handleSubmit} className="space-y-3">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
+                disabled={status === "loading" || status === "success"}
+                className="w-full px-4 py-3 text-sm bg-white border border-primary/10 text-primary placeholder:text-primary/30 focus:border-primary/40 focus:outline-none transition-all duration-200 disabled:opacity-50"
+              />
+              <button
+                type="submit"
+                disabled={status === "loading" || status === "success"}
+                className="w-full px-6 py-3 text-sm font-black tracking-wider uppercase bg-primary text-secondary transition-all duration-200 hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {status === "loading"
+                  ? "Subscribing..."
+                  : status === "success"
+                  ? "Subscribed ✓"
+                  : "Subscribe"}
+              </button>
+
+              {status === "error" && (
+                <div className="px-4 py-3 border border-red-200 bg-red-50 text-red-700 text-xs">
+                  {errorMessage}
+                </div>
+              )}
+
+              <p className="text-[11px] text-primary/30 pt-1">
+                We respect your privacy. Unsubscribe anytime.
+              </p>
+            </form>
+          </motion.div>
         </motion.div>
 
+        {/* Bottom */}
         <div className="border-t border-primary/10 pt-6 text-center text-xs font-light text-primary/30">
-          <p>© 2026 Volasec. All rights reserved.</p>
+          © 2026 Volasec. All rights reserved.
         </div>
       </div>
     </motion.footer>

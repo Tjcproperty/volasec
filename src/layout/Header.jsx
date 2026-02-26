@@ -125,7 +125,7 @@ export default function Header() {
         className={cx(
           "fixed top-0 w-full z-50 transition-all duration-300",
           scrolled
-            ? "bg-primary border-b border-secondary/10 shadow-lg"
+            ? "bg-dark border-b border-secondary/10 shadow-lg"
             : "bg-secondary/30 border-b border-primary/30",
         )}
       >

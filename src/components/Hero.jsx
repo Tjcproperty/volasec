@@ -76,7 +76,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.35 }}
-              className="block text-3xl sm:text-5xl md:text-7xl font-black text-glow"
+              className="block  text-3xl md:text-6xl  font-black text-glow"
             >
               SECURITY
             </motion.span>
@@ -85,7 +85,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
-              className="block text-3xl sm:text-5xl md:text-7xl font-black text-gradient"
+              className="block text-3xl md:text-6xl  font-black text-gradient"
             >
               ARCHITECTURE
             </motion.span>
@@ -94,7 +94,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.65 }}
-              className="block mt-3 sm:mt-4 text-xl sm:text-2xl md:text-5xl font-semibold text-primary/80"
+              className="block mt-3 sm:mt-4 text-2xl md:text-3xl font-semibold text-primary/80"
             >
               For High-Stakes Cloud Environments
             </motion.span>

@@ -15,12 +15,32 @@ export default function Contact() {
   const [callType, setCallType] = useState("30min");
 
   const callOptions = [
-    { id: "15min", duration: "15 min", title: "Quick Chat", calLink: "james-moyosore-quqdc8/15min" },
-    { id: "30min", duration: "30 min", title: "Strategy Session", calLink: "james-moyosore-quqdc8/30min" },
-    { id: "60min", duration: "1 hour", title: "Deep Dive", calLink: "james-moyosore-quqdc8/60min" },
+    {
+      id: "15min",
+      duration: "15 min",
+      title: "Quick Chat",
+      calLink: "james-moyosore-quqdc8/15min",
+    },
+    {
+      id: "30min",
+      duration: "30 min",
+      title: "Strategy Session",
+      calLink: "james-moyosore-quqdc8/30min",
+    },
+    {
+      id: "60min",
+      duration: "1 hour",
+      title: "Deep Dive",
+      calLink: "james-moyosore-quqdc8/60min",
+    },
   ];
 
-  const [form, setForm] = useState({ name: "", email: "", company: "", message: "" });
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    company: "",
+    message: "",
+  });
   const [sending, setSending] = useState(false);
   const [status, setStatus] = useState({ type: "", msg: "" });
 
@@ -42,7 +62,10 @@ export default function Contact() {
     e.preventDefault();
     setStatus({ type: "", msg: "" });
     if (!form.name.trim() || !form.email.trim() || !form.message.trim()) {
-      setStatus({ type: "error", msg: "Please fill in your name, email, and message." });
+      setStatus({
+        type: "error",
+        msg: "Please fill in your name, email, and message.",
+      });
       return;
     }
     try {
@@ -53,10 +76,16 @@ export default function Contact() {
         company: form.company.trim(),
         message: form.message.trim(),
       });
-      setStatus({ type: "success", msg: "Message sent. We'll reply within 24 hours." });
+      setStatus({
+        type: "success",
+        msg: "Message sent. We'll reply within 24 hours.",
+      });
       setForm({ name: "", email: "", company: "", message: "" });
     } catch (err) {
-      setStatus({ type: "error", msg: err?.message || "Failed to send message. Please try again." });
+      setStatus({
+        type: "error",
+        msg: err?.message || "Failed to send message. Please try again.",
+      });
     } finally {
       setSending(false);
     }
@@ -81,16 +110,21 @@ export default function Contact() {
         <meta name="twitter:image" content={image} />
       </Helmet>
 
-      <section id="contact" className="scroll-mt-24 relative overflow-hidden flex flex-col lg:flex-row min-h-screen">
-
+      <section
+        id="contact"
+        className="scroll-mt-24 relative overflow-hidden flex flex-col lg:flex-row min-h-screen"
+      >
         {/* ── LEFT — DARK (booking) ── */}
         <div className="relative lg:w-1/2 bg-dark flex flex-col py-20 px-8 md:px-14 overflow-hidden">
-
           {/* Background video — subtle, dark side */}
           <div className="absolute inset-0 z-0">
             <video
-              autoPlay src="/cloud.mp4" type="video/mp4"
-              loop muted playsInline
+              autoPlay
+              src="/cloud.mp4"
+              type="video/mp4"
+              loop
+              muted
+              playsInline
               className="absolute inset-0 w-full h-full object-cover opacity-20"
             />
             <div className="absolute inset-0 bg-primary/80" />
@@ -121,21 +155,24 @@ export default function Contact() {
                 Book a Call
               </p>
               <h2 className="text-3xl md:text-4xl font-black text-secondary leading-tight mb-4">
-                SCHEDULE YOUR<br />
+                SCHEDULE YOUR
+                <br />
                 <span className="text-secondary/40">STRATEGY SESSION</span>
               </h2>
               <p className="text-secondary/60 font-light text-sm leading-relaxed max-w-sm">
-                Choose your preferred session length and pick a time that works for you.
+                Choose your preferred session length and pick a time that works
+                for you.
               </p>
             </motion.div>
 
+        
             {/* Call type selector */}
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.7, delay: 0.15 }}
-              className="grid grid-cols-3 gap-3 mb-8"
+              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-8"
             >
               {callOptions.map((option) => (
                 <motion.button
@@ -153,21 +190,43 @@ export default function Contact() {
                     <motion.div
                       layoutId="selected-indicator"
                       className="absolute top-2 right-2 w-5 h-5 bg-secondary rounded-full flex items-center justify-center"
-                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 30,
+                      }}
                     >
-                      <svg className="w-3 h-3 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                      <svg
+                        className="w-3 h-3 text-primary"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={3}
+                          d="M5 13l4 4L19 7"
+                        />
                       </svg>
                     </motion.div>
                   )}
-                  <div className={`text-[10px] font-black  tracking-wider mb-1 ${
-                    callType === option.id ? "text-secondary" : "text-secondary/40"
-                  }`}>
+                  <div
+                    className={`text-[10px] font-black tracking-wider mb-1 ${
+                      callType === option.id
+                        ? "text-secondary"
+                        : "text-secondary/40"
+                    }`}
+                  >
                     {option.duration}
                   </div>
-                  <div className={`text-xs font-bold ${
-                    callType === option.id ? "text-secondary/90" : "text-secondary/50"
-                  }`}>
+                  <div
+                    className={`text-xs font-bold ${
+                      callType === option.id
+                        ? "text-secondary/90"
+                        : "text-secondary/50"
+                    }`}
+                  >
                     {option.title}
                   </div>
                 </motion.button>
@@ -184,17 +243,17 @@ export default function Contact() {
                 transition={{ duration: 0.4 }}
                 className="rounded-xl overflow-hidden flex-1"
               >
-              <Cal
-  namespace={callType}
-  calLink={selectedCall.calLink}
-  style={{ width: "100%", height: "100%", minHeight: "500px" }}
-  config={{
-    layout: "month_view",
-    useSlotsViewOnSmallScreen: "true",
-    theme: "light",         // "light" | "dark"
-    brandColor: "#0E1A2B",  // your primary color — controls buttons, selected dates, etc.
-  }}
-/>
+                <Cal
+                  namespace={callType}
+                  calLink={selectedCall.calLink}
+                  style={{ width: "100%", height: "100%", minHeight: "500px" }}
+                  config={{
+                    layout: "month_view",
+                    useSlotsViewOnSmallScreen: "true",
+                    theme: "light", // "light" | "dark"
+                    brandColor: "#0E1A2B", // your primary color — controls buttons, selected dates, etc.
+                  }}
+                />
               </motion.div>
             </AnimatePresence>
           </div>
@@ -202,12 +261,12 @@ export default function Contact() {
 
         {/* ── RIGHT — LIGHT (form) ── */}
         <div className="relative lg:w-1/2 bg-secondary flex flex-col justify-center py-20 px-8 md:px-14">
-
           {/* Subtle texture */}
           <div
             className="pointer-events-none absolute inset-0 opacity-[0.03]"
             style={{
-              backgroundImage: "radial-gradient(circle at 2px 2px, #0E1A2B 1px, transparent 0)",
+              backgroundImage:
+                "radial-gradient(circle at 2px 2px, #0E1A2B 1px, transparent 0)",
               backgroundSize: "32px 32px",
             }}
           />
@@ -234,7 +293,8 @@ export default function Contact() {
                 Send a Message
               </p>
               <h2 className="text-3xl  font-black text-primary leading-tight mb-4">
-                PREFER<br />
+                PREFER
+                <br />
                 <span className="text-primary/40">EMAIL?</span>
               </h2>
               <p className="text-primary/60 font-light text-sm leading-relaxed">
@@ -244,12 +304,14 @@ export default function Contact() {
 
             {/* Status */}
             {status.msg && (
-              <div className={[
-                "border px-4 py-3 text-sm rounded mb-6",
-                status.type === "success"
-                  ? "border-green-200 bg-green-50 text-green-800"
-                  : "border-red-200 bg-red-50 text-red-800",
-              ].join(" ")}>
+              <div
+                className={[
+                  "border px-4 py-3 text-sm rounded mb-6",
+                  status.type === "success"
+                    ? "border-green-200 bg-green-50 text-green-800"
+                    : "border-red-200 bg-red-50 text-red-800",
+                ].join(" ")}
+              >
                 {status.msg}
               </div>
             )}
@@ -263,9 +325,24 @@ export default function Contact() {
               className="space-y-6"
             >
               {[
-                { key: "name", label: "Name", type: "text", placeholder: "John Doe" },
-                { key: "email", label: "Email", type: "email", placeholder: "john@company.com" },
-                { key: "company", label: "Company", type: "text", placeholder: "Company name (optional)" },
+                {
+                  key: "name",
+                  label: "Name",
+                  type: "text",
+                  placeholder: "John Doe",
+                },
+                {
+                  key: "email",
+                  label: "Email",
+                  type: "email",
+                  placeholder: "john@company.com",
+                },
+                {
+                  key: "company",
+                  label: "Company",
+                  type: "text",
+                  placeholder: "Company name (optional)",
+                },
               ].map(({ key, label, type, placeholder }) => (
                 <div key={key}>
                   <label className="block text-[12px]  tracking-[0.2em]  text-primary/50 mb-2">
@@ -300,31 +377,53 @@ export default function Contact() {
                 type="submit"
                 disabled={sending}
                 className={`w-full py-4 text-sm font-black tracking-widest  bg-primary text-secondary flex items-center justify-center gap-3 transition-all duration-300 ${
-                  sending ? "opacity-60 cursor-not-allowed" : "hover:bg-primary/90"
+                  sending
+                    ? "opacity-60 cursor-not-allowed"
+                    : "hover:bg-primary/90"
                 }`}
               >
                 {sending ? "Sending..." : "Send Message"}
                 <motion.svg
                   className="w-4 h-4"
-                  fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                   animate={sending ? {} : { x: [0, 5, 0] }}
-                  transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+                  transition={{
+                    duration: 1.8,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M14 5l7 7m0 0l-7 7m7-7H3"
+                  />
                 </motion.svg>
               </motion.button>
             </motion.form>
 
             {/* Trust badge */}
             <div className="mt-8 pt-8 border-t border-primary/10 flex items-center gap-3 text-primary/40">
-              <svg className="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+              <svg
+                className="w-4 h-4 shrink-0"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                  clipRule="evenodd"
+                />
               </svg>
-              <p className="text-xs">Your information is secure and confidential</p>
+              <p className="text-xs">
+                Your information is secure and confidential
+              </p>
             </div>
           </div>
         </div>
-
       </section>
     </>
   );

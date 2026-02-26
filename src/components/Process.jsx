@@ -214,7 +214,7 @@ export default function Process({
             className="mb-5 sm:mb-6 h-1 bg-primary"
           />
 
-          <h2 className="mb-3 text-2xl sm:text-2xl md:text-6xl font-black tracking-tight text-secondary">
+          <h2 className="mb-3 text-xl sm:text-xl md:text-6xl font-black tracking-tight text-secondary">
              <SectionBadge
                        label="How We Work"
                        className="mb-6 text-secondary-50 border-secondary-30"
@@ -249,13 +249,13 @@ export default function Process({
                   <motion.div
                     className={cx(
                       "leading-none",
-                      "text-2xl sm:text-6xl font-black",
+                      "text-2xl md:text-5xl font-black",
                       "min-w-0 sm:min-w-[90px]",
                       isActive ? activeNumClass[index] : "text-secondary-30",
                     )}
                     animate={{ opacity: isActive ? 1 : 0.35 }}
                     transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-                    style={
+                    style={ 
                       isActive
                         ? { textShadow: "0 0 24px rgba(14, 26, 43, 0.35)" }
                         : undefined
@@ -266,7 +266,7 @@ export default function Process({
 
                   {/* Text (always bright + readable, no highlight animation) */}
                   <div className="flex-1">
-                    <h3 className="mb-2 text-xl sm:text-2xl font-black text-secondary">
+                    <h3 className="mb-2 text-xl md:text-2xl font-black text-secondary">
                       {step.title}
                     </h3>
 
