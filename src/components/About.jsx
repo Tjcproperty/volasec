@@ -1,5 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
+import SectionBadge from "./shared/SectionBadge";
 
 function About() {
   return (
@@ -14,11 +15,10 @@ function About() {
             className="
             order-2 md:order-1 
     relative
-rounded-2xl
-    bg-secondary/90
+
     backdrop-blur-sm
     p-8 sm:p-10
-    border border-secondary-30
+ 
   "
           >
             {/* subtle top accent */}
@@ -32,15 +32,16 @@ rounded-2xl
               className="h-0.5  mb-6"
             />
 
-            <h2 className="text-4xl md:text-5xl font-black mb-6 tracking-tight text-dark">
-              WHO WE <span className="text-primary">ARE</span>
-            </h2>
+             <SectionBadge
+                                  label="What We Do"
+                                  className="mb-6 text-secondary-50 border-secondary-30"
+                                />  
 
-            <p className="text-lg md:text-xl font-medium mb-4 leading-relaxed text-dark">
+            <p className="text-lg md:text-xl font-medium mb-4 leading-relaxed text-secondary-30">
               We're not a traditional security consultancy.
             </p>
 
-            <p className="text-base font-light mb-10 leading-relaxed text-dark-80 max-w-xl">
+            <p className="text-base font-light mb-10 leading-relaxed text-secondary-80 max-w-xl">
               We're former CISOs, security engineers, and cloud architects
               who've built and defended systems at enterprise scale.
             </p>
@@ -62,10 +63,10 @@ rounded-2xl
                   className="group"
                 >
                   <div className="flex items-baseline gap-4">
-                    <span className="text-3xl font-black text-primary">
+                    <span className="text-3xl font-black text-secondary">
                       {item.stat}
                     </span>
-                    <span className="text-sm font-medium text-dark-80">
+                    <span className="text-sm font-medium text-secondary-80">
                       {item.label}
                     </span>
                   </div>

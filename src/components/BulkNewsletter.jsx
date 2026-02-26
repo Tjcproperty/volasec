@@ -6,7 +6,7 @@ import { toast, Toaster } from "react-hot-toast";
 export default function BulkNewsletter() {
   const [subscribers, setSubscribers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [customized, setCustomized] = useState(false);
+  const [customised, setCustomised] = useState(false);
   const [filter, setFilter] = useState("all");
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
@@ -154,7 +154,7 @@ export default function BulkNewsletter() {
   });
 
   const handleSend = async () => {
-    if (!customized) return toast.error("Enable 'Customized Newsletter' first!");
+    if (!customised) return toast.error("Enable 'Customised Newsletter' first!");
     if (!title.trim() || !message.trim()) return toast.error("Title and message are required!");
     setSending(true);
 
@@ -234,8 +234,8 @@ export default function BulkNewsletter() {
         <h1 className="text-3xl font-extrabold text-[#0E1A2B]">Bulk Newsletter</h1>
         <div className="flex items-center gap-3">
           <label className="inline-flex items-center gap-2 font-semibold text-[#0E1A2B]">
-            <input type="checkbox" checked={customized} onChange={() => setCustomized(!customized)} className="form-checkbox h-5 w-5 text-[#0E1A2B]" />
-            Customized Newsletter
+            <input type="checkbox" checked={customised} onChange={() => setCustomised(!customised)} className="form-checkbox h-5 w-5 text-[#0E1A2B]" />
+            Customised Newsletter
           </label>
           <span className="text-[#0E1A2B]/50 text-sm">{loading ? "Loading..." : `${subscribers.length} subscribers`}</span>
         </div>
@@ -269,7 +269,7 @@ export default function BulkNewsletter() {
         ))}
       </div>
 
-      {customized && (
+      {customised && (
         <div className="space-y-4">
 
           {/* Title & Message */}

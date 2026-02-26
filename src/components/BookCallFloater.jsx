@@ -23,7 +23,7 @@ export default function BookCallFloater() {
         px-2 py-2
         rounded-lg
         shadow-xl shadow-primary/30
-        hover:bg-primary-80
+        hover:bg-secondary-80
         transition-colors
       "
     >

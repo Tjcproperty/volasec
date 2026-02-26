@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
+import SectionBadge from "./shared/SectionBadge";
 
 function cx(...c) {
   return c.filter(Boolean).join(" ");
@@ -213,9 +214,11 @@ export default function Process({
             className="mb-5 sm:mb-6 h-1 bg-primary"
           />
 
-          <h2 className="mb-3 text-3xl sm:text-4xl md:text-6xl font-black tracking-tight text-secondary">
-            HOW WE <span className="text-secondary-50/40">WORK</span>
-          </h2>
+          <h2 className="mb-3 text-2xl sm:text-2xl md:text-6xl font-black tracking-tight text-secondary">
+             <SectionBadge
+                       label="How We Work"
+                       className="mb-6 text-secondary-50 border-secondary-30"
+                     />   </h2>
 
           <p className="text-sm sm:text-base text-secondary-80 font-light">
             A proven, repeatable methodology
@@ -246,7 +249,7 @@ export default function Process({
                   <motion.div
                     className={cx(
                       "leading-none",
-                      "text-4xl sm:text-6xl font-black",
+                      "text-2xl sm:text-6xl font-black",
                       "min-w-0 sm:min-w-[90px]",
                       isActive ? activeNumClass[index] : "text-secondary-30",
                     )}
@@ -263,7 +266,7 @@ export default function Process({
 
                   {/* Text (always bright + readable, no highlight animation) */}
                   <div className="flex-1">
-                    <h3 className="mb-2 text-xl sm:text-3xl font-black text-secondary">
+                    <h3 className="mb-2 text-xl sm:text-2xl font-black text-secondary">
                       {step.title}
                     </h3>
 
