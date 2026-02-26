@@ -139,7 +139,7 @@ export default function Testimonial() {
       className="border-t border-primary-30 pt-10 md:px-4 "
     >
       <div className="mb-6 sm:mb-8 flex items-end justify-between gap-6">
-        <h3 className="text-xl sm:text-2xl font-black text-secondary">
+        <h3 className="text-xl md:text-xl font-black text-secondary">
           CLIENT <span className="text-primary">TESTIMONIALS</span>
         </h3>
         <div className="hidden sm:block h-px flex-1 bg-primary-30/60" />
@@ -244,7 +244,7 @@ export default function Testimonial() {
                   />
 
                   <div className="relative pl-3">
-                    <p className="text-sm sm:text-base text-dark/80 italic font-light leading-relaxed">
+                    <p className="text-sm md:text-sm text-dark/80 italic font-light leading-relaxed">
                       “{t.quote}”
                     </p>
 
