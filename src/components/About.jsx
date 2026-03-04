@@ -20,17 +20,36 @@ export default function About() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="order-2 md:order-1 relative bg-secondary/90 backdrop-blur-sm p-8 sm:p-10 border rounded-md border-secondary-30"
+            className="
+            order-2 md:order-1 
+    relative
+rounded-2xl
+    bg-secondary/90
+    backdrop-blur-sm
+    p-8 sm:p-10
+    border border-secondary-30
+  "
           >
-            <SectionBadge label="Who We Are" className="mb-6 text-dark-80" />
+            {/* subtle top accent */}
+            {/* <div className="absolute -top-px left-8 h-px w-20 bg-primary" /> */}
 
-            <BlurRevealHeading
-              text="We're Not a Traditional Security Consultancy"
-              as="h2"
-              className="text-3xl md:text-4xl font-normal mb-6 tracking-tight text-dark"
+            <motion.div
+              initial={{ width: 0 }}
+              whileInView={{ width: "80px" }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="h-0.5  mb-6"
             />
 
-            <p className="text-base font-light mb-10 leading-relaxed text-dark-80 max-w-xl">
+            <h2 className="text-4xl md:text-5xl font-black mb-6 tracking-tight text-dark">
+              WHO WE <span className="text-primary">ARE</span>
+            </h2>
+
+            <p className="text-lg md:text-xl font-medium mb-4 leading-relaxed text-dark">
+              We're not a traditional security consultancy.
+            </p>
+
+            <p className="text-base font-light mb-10 leading-relaxed text-secondary-80 max-w-xl">
               We're former CISOs, security engineers, and cloud architects
               who've built and defended systems at enterprise scale.
             </p>
@@ -52,10 +71,10 @@ export default function About() {
                   className="group"
                 >
                   <div className="flex items-baseline gap-4">
-                    <span className="text-3xl font-normal text-primary">
+                    <span className="text-3xl font-black text-primary">
                       {item.stat}
                     </span>
-                    <span className="text-sm font-medium text-dark-80">
+                    <span className="text-sm font-medium text-secondary-80">
                       {item.label}
                     </span>
                   </div>

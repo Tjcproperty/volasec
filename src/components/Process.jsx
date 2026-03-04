@@ -1,7 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import SectionBadge from "./shared/SectionBadge";
+<<<<<<< HEAD
 import BlurRevealHeading from "./shared/BlurRevealHeading";
+=======
+>>>>>>> 3d36dede88a6a108de0372362dfd63465d99e4b9
 
 function cx(...c) {
   return c.filter(Boolean).join(" ");
@@ -212,11 +215,19 @@ export default function Process({
             className="mb-6 text-secondary-50 border-secondary-30"
           />
 
+<<<<<<< HEAD
           <BlurRevealHeading
             text="A Proven Repeatable Methodology"
             as="h2"
             className="mb-3 text-3xl sm:text-4xl md:text-6xl font-normal tracking-tight text-secondary"
           />
+=======
+          <h2 className="mb-3 text-xl sm:text-xl md:text-6xl font-black tracking-tight text-secondary">
+             <SectionBadge
+                       label="How We Work"
+                       className="mb-6 text-secondary-50 border-secondary-30"
+                     />   </h2>
+>>>>>>> 3d36dede88a6a108de0372362dfd63465d99e4b9
 
           <p className="text-sm sm:text-base text-secondary-80 font-light">
             Five clear phases from discovery to ongoing support.
@@ -247,13 +258,17 @@ export default function Process({
                   <motion.div
                     className={cx(
                       "leading-none",
+<<<<<<< HEAD
                       "text-4xl sm:text-6xl font-normal",
+=======
+                      "text-2xl md:text-5xl font-black",
+>>>>>>> 3d36dede88a6a108de0372362dfd63465d99e4b9
                       "min-w-0 sm:min-w-[90px]",
                       isActive ? activeNumClass[index] : "text-secondary-30",
                     )}
                     animate={{ opacity: isActive ? 1 : 0.35 }}
                     transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-                    style={
+                    style={ 
                       isActive
                         ? { textShadow: "0 0 24px rgba(14, 26, 43, 0.35)" }
                         : undefined
@@ -264,7 +279,11 @@ export default function Process({
 
                   {/* Text */}
                   <div className="flex-1">
+<<<<<<< HEAD
                     <h3 className="mb-2 text-xl sm:text-3xl font-normal text-secondary">
+=======
+                    <h3 className="mb-2 text-xl md:text-2xl font-black text-secondary">
+>>>>>>> 3d36dede88a6a108de0372362dfd63465d99e4b9
                       {step.title}
                     </h3>
 

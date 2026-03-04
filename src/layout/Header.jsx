@@ -340,24 +340,78 @@ function MobileSolutions({ onClose }) {
    Main Header
 ────────────────────────────────────────────── */
 export default function Header() {
+  // Add scroll progress tracking
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001,
+  });
+
+  const navItems = useMemo(
+    () => [
+      { id: "hero", label: "Home" },
+      { id: "about", label: "About" },
+      { id: "services", label: "Services" },
+      { id: "proof", label: "Proof" },
+      { id: "process", label: "Process" },
+
+      { id: "contact", label: "Contact" },
+    ],
+    [],
+  );
+
+  const [activeSection, setActiveSection] = useState("hero");
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [solutionsOpen, setSolutionsOpen] = useState(false);
-  const location = useLocation();
-  const navigate = useNavigate();
-  const isHome = location.pathname === "/";
 
-  const closeMenu = useCallback(() => setSolutionsOpen(false), []);
-
+  // Highlight active section
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
+    const headerOffset = 88; // 64–80 depending on your header height
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // Pick the section closest to the top (within the rootMargin window)
+        const inView = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => {
+            const aTop = a.target.getBoundingClientRect().top;
+            const bTop = b.target.getBoundingClientRect().top;
+            return aTop - bTop;
+          })[0];
+
+        if (inView?.target?.id) setActiveSection(inView.target.id);
+      },
+      {
+        // ✅ shifts the “active zone” down past the sticky header
+        root: null,
+        rootMargin: `-${headerOffset}px 0px -55% 0px`,
+        threshold: [0, 0.1, 0.2],
+      },
+    );
+
+    const sections = Array.from(document.querySelectorAll("section[id]"));
+    sections.forEach((s) => observer.observe(s));
+
+    return () => {
+      sections.forEach((s) => observer.unobserve(s));
+      observer.disconnect();
+    };
+  }, []);
+
+  // Detect scroll for header background
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   useEffect(() => {
     if (open) {
-      const sw = window.innerWidth - document.documentElement.clientWidth;
+      const scrollbarWidth =
+        window.innerWidth - document.documentElement.clientWidth;
       document.body.style.overflow = "hidden";
       document.body.style.paddingRight = `${sw}px`;
     } else {
@@ -370,27 +424,17 @@ export default function Header() {
     };
   }, [open]);
 
+  // Close menu on resize to desktop
   useEffect(() => {
-    const onResize = () => {
-      if (window.innerWidth >= 1024) setOpen(false);
+    const handleResize = () => {
+      if (window.innerWidth >= 768 && open) {
+        setOpen(false);
+      }
     };
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, []);
 
-  useEffect(() => {
-    closeMenu();
-    setOpen(false);
-  }, [location.pathname, closeMenu]);
-
-  // Click outside → close
-  useEffect(() => {
-    const onDown = (e) => {
-      if (!e.target.closest("[data-solutions-nav]")) closeMenu();
-    };
-    document.addEventListener("pointerdown", onDown);
-    return () => document.removeEventListener("pointerdown", onDown);
-  }, [closeMenu]);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [open]);
 
   const handleAboutClick = (e) => {
     e.preventDefault();
@@ -401,13 +445,30 @@ export default function Header() {
 
   const handleContactClick = (e) => {
     e.preventDefault();
-    if (isHome) scrollToSection("contact");
-    else navigate("/contact");
+    const el = document.getElementById(id);
+    if (!el) return;
+
     setOpen(false);
+
+    setTimeout(() => {
+      const headerOffset = 64;
+      const elementPosition = el.getBoundingClientRect().top;
+      const offsetPosition =
+        elementPosition + window.pageYOffset - headerOffset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth",
+      });
+    }, 100);
   };
 
   return (
     <>
+      <motion.div
+        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-secondary via-dark to-dark z-[60] origin-left"
+        style={{ scaleX }}
+      />
       <motion.nav
         initial={{ y: -100 }}
         animate={{ y: 0 }}
@@ -416,99 +477,109 @@ export default function Header() {
         className={cx(
           "fixed top-0 w-full z-50 transition-all duration-300",
           scrolled
-            ? "bg-secondary/95 border-b border-dark/10 shadow-lg backdrop-blur-sm"
-            : "bg-dark border-b border-secondary-30/30 backdrop-blur-sm",
+            ? "bg-secondary/95 border-b border-primary/10 shadow-lg"
+            : "bg-primary-30/30  border-b border-secondary-30",
         )}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 sm:h-20">
             {/* Logo */}
-            <Link to="/" className="flex items-center shrink-0">
-              <motion.img
-                src={scrolled ? "/monoblue.png" : "/monologo.png"}
-                className="h-8 w-auto"
-                alt="Volasec"
+            {scrolled ? (
+              <motion.a
+                href="/"
+                // onClick={scrollToId("hero")}
+                className="flex items-center"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-              />
-            </Link>
+              >
+                <img src="/monoblue.png" className="h-8 w-auto" alt="Logo" />
+              </motion.a>
+            ) : (
+              <motion.a
+                href="/"
+                // onClick={scrollToId("hero")}
+                className="flex items-center"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <img src="/monologo.png" className="h-8 w-auto" alt="Logo" />
+              </motion.a>
+            )}
 
-            {/* Desktop nav */}
-            <div className="hidden lg:flex items-center gap-8">
-              {/* Solutions — trigger only, dropdown is portal-like fixed */}
-              <div data-solutions-nav>
-                <button
-                  onClick={() => setSolutionsOpen((p) => !p)}
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-6 lg:space-x-10">
+              {navItems.slice(1).map((item) => (
+                <motion.a
+                  key={item.id}
+                  href={`#${item.id}`}
+                  onClick={scrollToId(item.id)}
+                  whileHover={{ y: -2 }}
                   className={cx(
-                    "flex items-center gap-1 text-xs font-bold tracking-wider transition-colors",
-                    scrolled
-                      ? "text-dark hover:text-dark"
-                      : "text-secondary-80 hover:text-secondary",
-                    solutionsOpen &&
-                      (scrolled ? "text-dark" : "text-secondary"),
+                    "relative text-xs font-bold tracking-wider  transition-colors",
+                    activeSection === item.id
+                      ? "text-primary"
+                      : scrolled
+                        ? "text-dark hover:text-primary"
+                        : "text-secondary-80 hover:text-secondary",
                   )}
                 >
-                  Solutions
-                  <motion.span
-                    animate={{ rotate: solutionsOpen ? 180 : 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="inline-flex"
-                  >
-                    <ChevronDown className="w-3 h-3" />
-                  </motion.span>
-                </button>
-              </div>
-
-              {/* About */}
-              <a
-                href={isHome ? "#about" : "/#about"}
-                onClick={handleAboutClick}
-                className={cx(
-                  "text-xs font-bold tracking-wider transition-colors",
-                  scrolled
-                    ? "text-dark hover:text-dark"
-                    : "text-secondary-80 hover:text-secondary",
-                )}
-              >
-                About
-              </a>
-
-              {/* Contact */}
-              <a
-                href="/contact"
-                onClick={handleContactClick}
-                className={cx(
-                  "text-xs font-bold tracking-wider transition-colors",
-                  scrolled
-                    ? "text-dark hover:text-dark"
-                    : "text-secondary-80 hover:text-secondary",
-                )}
-              >
-                Contact
-              </a>
+                  {item.label}
+                  {/* Active indicator */}
+                  {activeSection === item.id && (
+                    <motion.div
+                      layoutId="activeSection"
+                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary"
+                      transition={{
+                        type: "spring",
+                        stiffness: 380,
+                        damping: 30,
+                      }}
+                    />
+                  )}
+                </motion.a>
+              ))}
             </div>
 
-            {/* Desktop CTA */}
-            <Link
-              to="/contact"
-              className={cx(
-                "hidden lg:flex items-center px-6 py-2.5 text-xs font-black tracking-wider transition-all",
-                scrolled
-                  ? "bg-dark text-dark-foreground rounded-md hover:bg-dark-80"
-                  : "bg-secondary text-dark rounded-md hover:bg-secondary-80",
-              )}
-            >
-              WORK WITH US
-            </Link>
+            {/* Desktop CTA Button */}
+            {scrolled ? (
+              <motion.a
+                href="#contact"
+                onClick={scrollToId("contact")}
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                className="hidden md:flex relative px-5 lg:px-6 py-2.5 text-xs rounded-lg font-black tracking-wider bg-primary text-primary-foreground overflow-hidden group"
+              >
+                <span className="relative z-10"> WORK WITH US</span>
+                <motion.div
+                  className="absolute inset-0 bg-primary-80"
+                  initial={{ x: "100%" }}
+                  whileHover={{ x: 0 }}
+                  transition={{ duration: 0.3 }}
+                />
+              </motion.a>
+            ) : (
+              <motion.a
+                href="#contact"
+                onClick={scrollToId("contact")}
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                className="hidden md:flex relative px-5 lg:px-6 py-2.5 text-xs rounded-lg font-black tracking-wider border-2 bg-secondary border-dark-80  text-dark-80 overflow-hidden group"
+              >
+                <span className="relative z-10"> WORK WITH US</span>
+                <motion.div
+                  className="absolute inset-0 bg-secondary-80"
+                  initial={{ x: "100%" }}
+                  whileHover={{ x: 0 }}
+                  transition={{ duration: 0.3 }}
+                />
+              </motion.a>
+            )}
 
-            {/* Mobile toggle */}
+            {/* Mobile Menu Button */}
             <motion.button
               onClick={() => setOpen(!open)}
               whileTap={{ scale: 0.9 }}
-              className={cx(
-                "lg:hidden p-2 transition-colors",
-                scrolled ? "text-dark" : "text-secondary",
-              )}
+              className={`md:hidden p-2 hover:text-primary transition-colors ${scrolled ? "text-dark" : "text-secondary"}`}
               aria-label="Toggle menu"
             >
               {open ? <X size={24} /> : <Menu size={24} />}
@@ -536,7 +607,7 @@ export default function Header() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
               onClick={() => setOpen(false)}
-              className="fixed inset-0 bg-dark/60 backdrop-blur-sm z-40 lg:hidden"
+              className="fixed inset-0 bg-dark/60 backdrop-blur-sm z-40 md:hidden"
               style={{ top: "64px" }}
             />
             <motion.div
@@ -544,40 +615,45 @@ export default function Header() {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed top-16 right-0 bottom-0 w-full sm:w-96 bg-dark shadow-2xl z-50 lg:hidden overflow-y-auto"
+              className="fixed top-16 right-0 bottom-0 w-full sm:w-80 bg-secondary shadow-2xl z-50 md:hidden overflow-y-auto"
             >
-              <div className="py-4">
-                <MobileSolutions onClose={() => setOpen(false)} />
-
-                <div className="border-b border-dark-30">
-                  <a
-                    href={isHome ? "#about" : "/#about"}
-                    onClick={handleAboutClick}
-                    className="block px-4 py-3 text-sm font-bold tracking-wider text-secondary hover:bg-dark-30/20 transition-colors"
-                  >
-                    About
-                  </a>
+              <div className="p-6">
+                {/* Mobile Navigation Links */}
+                <div className="space-y-2 mb-8">
+                  {navItems.map((item, i) => (
+                    <motion.a
+                      key={item.id}
+                      href={`#${item.id}`}
+                      onClick={scrollToId(item.id)}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.05 }}
+                      className={cx(
+                        "block px-4 py-3 text-sm font-bold tracking-wider  transition-all",
+                        activeSection === item.id
+                          ? "bg-primary text-primary-foreground"
+                          : "text-dark hover:bg-primary-30 hover:text-primary",
+                      )}
+                    >
+                      {item.label}
+                    </motion.a>
+                  ))}
                 </div>
 
-                <div className="border-b border-dark-30">
-                  <Link
-                    to="/contact"
-                    onClick={() => setOpen(false)}
-                    className="block px-4 py-3 text-sm font-bold tracking-wider text-secondary hover:bg-dark-30/20 transition-colors"
-                  >
-                    Contact
-                  </Link>
-                </div>
+                {/* Mobile CTA */}
+                <motion.a
+                  href="#contact"
+                  onClick={scrollToId("contact")}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="block w-full px-6 py-4 text-center text-sm font-black tracking-wider bg-primary text-primary-foreground"
+                >
+                  WORK WITH US
+                </motion.a>
 
-                <div className="p-4">
-                  <Link
-                    to="/contact"
-                    onClick={() => setOpen(false)}
-                    className="block w-full px-6 py-4 rounded-md text-center text-sm font-black tracking-wider bg-secondary text-dark"
-                  >
-                    WORK WITH US
-                  </Link>
-                </div>
+                {/* Social Links or Additional Info */}
               </div>
             </motion.div>
           </>

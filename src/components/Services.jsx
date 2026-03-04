@@ -8,6 +8,15 @@ import {
   finopsServices,
   productServices,
 } from "@/data/services";
+import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
+import SectionBadge from "./shared/SectionBadge";
+import BlurRevealHeading from "./shared/BlurRevealHeading";
+import {
+  securityServices,
+  finopsServices,
+  productServices,
+} from "@/data/services";
 
 function cx(...c) {
   return c.filter(Boolean).join(" ");
@@ -29,71 +38,6 @@ const cardVariants = {
     transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
   },
 };
-
-function ServiceCard({ service, variant = "dark" }) {
-  const Icon = service.icon;
-  const isDark = variant === "dark";
-  const href = service.isTelescope
-    ? "/services/telescope"
-    : `/services/${service.slug}`;
-
-  return (
-    <motion.div variants={cardVariants}>
-      <Link
-        to={href}
-        className={cx(
-          "group block relative overflow-hidden border-l-4 border transition-all  rounded-md  duration-300",
-          isDark
-            ? "bg-primary border-primary-30 hover:bg-primary-80"
-            : "bg-secondary border-primary-30 hover:bg-secondary-80",
-          "p-6 sm:p-7",
-        )}
-      >
-        <div className="flex items-start gap-4 mb-4">
-          <div
-            className={cx(
-              "w-10 h-10 flex items-center justify-center shrink-0 transition-colors",
-              isDark
-                ? "bg-secondary text-primary"
-                : "bg-primary text-secondary",
-            )}
-          >
-            <Icon className="w-5 h-5" />
-          </div>
-          <h3
-            className={cx(
-              "text-xl font-medium leading-tight",
-              isDark ? "text-secondary" : "text-dark",
-            )}
-          >
-            {service.title}
-          </h3>
-        </div>
-
-        <p
-          className={cx(
-            "text-sm font-light leading-relaxed mb-6",
-            isDark ? "text-secondary-80" : "text-dark-80",
-          )}
-        >
-          {service.shortDescription}
-        </p>
-
-        <span
-          className={cx(
-            "inline-flex items-center gap-2 text-xs font-medium tracking-wider uppercase transition-colors",
-            isDark
-              ? "text-secondary-50 group-hover:text-secondary"
-              : "text-primary group-hover:text-primary-80",
-          )}
-        >
-          Learn More
-          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-        </span>
-      </Link>
-    </motion.div>
-  );
-}
 
 export default function Services() {
   const categories = [
