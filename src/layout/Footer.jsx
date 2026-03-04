@@ -11,7 +11,7 @@ function cx(...c) {
 
 const footerVariants = {
   hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { duration: 0.5, ease } },
+  show: { opacity: 1, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } },
 };
 
 const colsVariants = {
