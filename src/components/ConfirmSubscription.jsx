@@ -100,7 +100,7 @@ export default function ConfirmSubscription({ logoSrc = "/Iconwhite.png" }) {
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           exit={{ opacity: 0, y: -30 }}
           transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          className="relative z-10 w-full max-w-xl border border-secondary-10 bg-primary/20 backdrop-blur-sm p-12"
+          className="relative z-10 w-full max-w-xl border rounded-md border-secondary-10 bg-primary/20 backdrop-blur-sm p-12"
         >
           {/* Logo */}
           <div className="mb-10 flex justify-center">
@@ -110,7 +110,7 @@ export default function ConfirmSubscription({ logoSrc = "/Iconwhite.png" }) {
           {/* ===================== Loading ===================== */}
           {status === "loading" && (
             <div className="text-center">
-              <div className="w-14 h-14 border-2 border-secondary/20 border-t-secondary animate-spin mx-auto mb-6" />
+              <div className="w-14 h-14 border-2 rounded-md border-secondary/20 border-t-secondary animate-spin mx-auto mb-6" />
               <p className="text-[11px] tracking-[0.3em] uppercase text-secondary/40 mb-3">
                 SECURITY VERIFICATION
               </p>

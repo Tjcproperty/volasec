@@ -2,10 +2,15 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 
-import { cloudflare } from "@cloudflare/vite-plugin";
+const plugins = [react()];
+
+if (!process.env.DISABLE_CLOUDFLARE_PLUGIN) {
+  const { cloudflare } = await import("@cloudflare/vite-plugin");
+  plugins.push(cloudflare());
+}
 
 export default defineConfig({
-  plugins: [react(), cloudflare()],
+  plugins,
   server: {
     historyApiFallback: true,
   },

@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
+import SectionBadge from "./shared/SectionBadge";
+import BlurRevealHeading from "./shared/BlurRevealHeading";
 
 function cx(...c) {
   return c.filter(Boolean).join(" ");
@@ -29,7 +31,6 @@ const stepVariants = {
 };
 
 export default function Process({
-  // pass your logo path here, e.g. "/volasec-logo.svg"
   logoSrc = "/Iconwhite.png",
 }) {
   const steps = useMemo(
@@ -39,7 +40,7 @@ export default function Process({
         title: "Discovery & Risk Assessment",
         timeline: "1–2 weeks",
         description:
-          "Deep-dive interviews, architecture review, and threat modeling. We identify gaps and prioritize based on real business impact.",
+          "Deep-dive interviews, architecture review, and threat modelling. We identify gaps and prioritise based on real business impact.",
       },
       {
         number: "02",
@@ -73,7 +74,6 @@ export default function Process({
     [],
   );
 
-  // ONLY highlight the active number (keep your current token approach)
   const activeNumClass = [
     "text-secondary",
     "text-secondary",
@@ -135,10 +135,8 @@ export default function Process({
     };
   }, [steps.length]);
 
-  // background logo marks (small, mixed faint + slightly stronger)
   const bgMarks = useMemo(
     () => [
-      // 🔹 faint layer (texture)
       { top: "6%", left: "4%", size: 36, opacity: 0.1, rotate: -12 },
       { top: "12%", right: "8%", size: 32, opacity: 0.1, rotate: 10 },
       { top: "22%", left: "18%", size: 34, opacity: 0.1, rotate: -6 },
@@ -147,14 +145,10 @@ export default function Process({
       { top: "68%", right: "14%", size: 34, opacity: 0.1, rotate: 8 },
       { bottom: "18%", left: "22%", size: 30, opacity: 0.1, rotate: -14 },
       { bottom: "6%", right: "18%", size: 28, opacity: 0.1, rotate: 12 },
-
-      // 🔸 medium presence (noticeable)
       { top: "16%", left: "42%", size: 42, opacity: 0.12, rotate: -8 },
       { top: "34%", right: "28%", size: 40, opacity: 0.14, rotate: 10 },
       { top: "58%", left: "36%", size: 44, opacity: 0.15, rotate: -6 },
       { bottom: "32%", right: "34%", size: 42, opacity: 0.13, rotate: 12 },
-
-      // 🔺 strong accents (few, intentional)
       { top: "46%", left: "12%", size: 56, opacity: 0.18, rotate: -10 },
       { bottom: "22%", right: "8%", size: 54, opacity: 0.17, rotate: 8 },
     ],
@@ -164,9 +158,17 @@ export default function Process({
   return (
     <section
       id="process"
-      className="relative overflow-hidden bg-dark-80/100 py-20"
+      className="relative overflow-hidden bg-dark-80/100 py-24 md:py-32 border-b border-primary-30"
     >
-      {/* small logo background marks */}
+      {/* Grain texture */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.02]"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+        }}
+      />
+
+      {/* Small logo background marks */}
       <div className="pointer-events-none absolute inset-0 -z-0">
         {bgMarks.map((m, i) => {
           const style = {
@@ -192,7 +194,7 @@ export default function Process({
         })}
       </div>
 
-      {/* subtle ambient (no blur) */}
+      {/* Subtle ambient */}
       <div className="pointer-events-none absolute -top-40 right-0 h-[420px] w-[420px] sm:h-[520px] sm:w-[520px] bg-primary-30 opacity-20" />
       <div className="pointer-events-none absolute -bottom-40 left-0 h-[420px] w-[420px] sm:h-[520px] sm:w-[520px] bg-secondary-30 opacity-10" />
 
@@ -205,20 +207,19 @@ export default function Process({
           viewport={{ once: true, amount: 0.35 }}
           className="mb-10 sm:mb-14"
         >
-          <motion.div
-            initial={{ width: 0 }}
-            whileInView={{ width: "80px" }}
-            viewport={{ once: true, amount: 0.6 }}
-            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="mb-5 sm:mb-6 h-1 bg-primary"
+          <SectionBadge
+            label="How We Work"
+            className="mb-6 text-secondary-50 border-secondary-30"
           />
 
-          <h2 className="mb-3 text-3xl sm:text-4xl md:text-6xl font-black tracking-tight text-secondary">
-            HOW WE <span className="text-secondary-50/40">WORK</span>
-          </h2>
+          <BlurRevealHeading
+            text="A Proven Repeatable Methodology"
+            as="h2"
+            className="mb-3 text-3xl sm:text-4xl md:text-6xl font-normal tracking-tight text-secondary"
+          />
 
           <p className="text-sm sm:text-base text-secondary-80 font-light">
-            A proven, repeatable methodology
+            Five clear phases from discovery to ongoing support.
           </p>
         </motion.div>
 
@@ -242,11 +243,11 @@ export default function Process({
                 className="border-b border-secondary-30 pb-8 sm:pb-10"
               >
                 <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-8">
-                  {/* Number (ONLY highlight) */}
+                  {/* Number */}
                   <motion.div
                     className={cx(
                       "leading-none",
-                      "text-4xl sm:text-6xl font-black",
+                      "text-4xl sm:text-6xl font-normal",
                       "min-w-0 sm:min-w-[90px]",
                       isActive ? activeNumClass[index] : "text-secondary-30",
                     )}
@@ -261,13 +262,13 @@ export default function Process({
                     {step.number}
                   </motion.div>
 
-                  {/* Text (always bright + readable, no highlight animation) */}
+                  {/* Text */}
                   <div className="flex-1">
-                    <h3 className="mb-2 text-xl sm:text-3xl font-black text-secondary">
+                    <h3 className="mb-2 text-xl sm:text-3xl font-normal text-secondary">
                       {step.title}
                     </h3>
 
-                    <p className="mb-3 sm:mb-4 text-[11px] sm:text-xs font-black tracking-wider text-secondary-80">
+                    <p className="mb-3 sm:mb-4 text-[11px] sm:text-xs font-medium tracking-wider text-secondary-80">
                       TIMELINE:{" "}
                       <span className="text-secondary">{step.timeline}</span>
                     </p>

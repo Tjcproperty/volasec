@@ -1,9 +1,22 @@
-import React from "react";
 import { motion } from "framer-motion";
-import { scrollToSection } from "@/layout/Header";
+import { scrollToSection } from "@/lib/utils";
+import SectionBadge from "./shared/SectionBadge";
+import BlurRevealHeading from "./shared/BlurRevealHeading";
+
+/* Grain texture overlay */
+function GrainOverlay() {
+  return (
+    <div
+      className="pointer-events-none absolute inset-0 z-[4] opacity-[0.02]"
+      style={{
+        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+      }}
+    />
+  );
+}
 
 export default function Hero() {
-  const BG_IMAGE = "/blueee.png"; // MUST be in /public
+  const BG_IMAGE = "/blueee.png";
 
   const onScroll = (id) => (e) => {
     e.preventDefault();
@@ -22,8 +35,7 @@ export default function Hero() {
           backgroundImage: `url(${BG_IMAGE})`,
           backgroundRepeat: "no-repeat",
           backgroundPosition: "center",
-          // ✅ cover is better than 100% on mobile
-              backgroundSize: "contain",
+          backgroundSize: "contain",
         }}
         initial={{ scale: 1.05, opacity: 0 }}
         animate={{ scale: 1, opacity: 0.3 }}
@@ -36,9 +48,11 @@ export default function Hero() {
       {/* Gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-dark via-primary/70 to-dark z-[2]" />
 
-      {/* Floating glow elements (scaled down on mobile) */}
+      <GrainOverlay />
+
+      {/* Floating glow elements */}
       <motion.div
-        className="absolute top-24 right-6 sm:top-40 sm:right-20 w-40 h-40 sm:w-64 sm:h-64 rounded-full opacity-30 sm:opacity-40 z-[3]"
+        className="absolute top-24 right-6 sm:top-40 sm:right-20 w-40 h-40 sm:w-64 sm:h-64 opacity-30 sm:opacity-40 z-[3]"
         style={{
           background: "radial-gradient(circle, #0E1A2B 0%, transparent 70%)",
         }}
@@ -47,7 +61,7 @@ export default function Hero() {
       />
 
       <motion.div
-        className="absolute bottom-28 left-6 sm:bottom-40 sm:left-20 w-64 h-64 sm:w-96 sm:h-96 rounded-full opacity-10 z-[3]"
+        className="absolute bottom-28 left-6 sm:bottom-40 sm:left-20 w-64 h-64 sm:w-96 sm:h-96 opacity-10 z-[3]"
         style={{
           background: "radial-gradient(circle, #325a82 0%, transparent 70%)",
         }}
@@ -55,7 +69,7 @@ export default function Hero() {
         transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
       />
 
-      {/* ================= CONTENT ================= */}
+      {/* Content */}
       <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0 }}
@@ -63,43 +77,16 @@ export default function Hero() {
           transition={{ duration: 0.9 }}
           className="max-w-3xl mx-auto"
         >
-          {/* Accent line */}
-          <motion.div
-            initial={{ width: 0 }}
-            animate={{ width: "84px" }}
-            transition={{ duration: 0.9, delay: 0.25 }}
-            className="h-0.5 accent-gradient mb-8 sm:mb-10"
+          <SectionBadge
+            label="Cloud Security & FinOps"
+            className="mb-8 text-secondary-50 border-secondary-30"
           />
 
-          {/* Headline */}
-          <h1 className="tracking-tight leading-[1.05] mb-6 sm:mb-8">
-            <motion.span
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.35 }}
-              className="block text-4xl sm:text-5xl md:text-7xl font-black text-glow"
-            >
-              SECURITY
-            </motion.span>
-
-            <motion.span
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="block text-4xl sm:text-5xl md:text-7xl font-black text-gradient"
-            >
-              ARCHITECTURE
-            </motion.span>
-
-            <motion.span
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.65 }}
-              className="block mt-3 sm:mt-4 text-xl sm:text-2xl md:text-5xl font-semibold text-secondary/80"
-            >
-              For High-Stakes Cloud Environments
-            </motion.span>
-          </h1>
+          <BlurRevealHeading
+            text="Security Architecture For High-Stakes Cloud Environments"
+            as="h1"
+            className="tracking-tight leading-[1.05] mb-6 sm:mb-8 text-4xl sm:text-5xl md:text-7xl font-normal text-secondary"
+          />
 
           {/* Subtext */}
           <motion.p
@@ -108,7 +95,7 @@ export default function Hero() {
             transition={{ delay: 0.8 }}
             className="text-base sm:text-lg md:text-xl text-secondary/70 max-w-xl mb-10 sm:mb-12 font-light leading-relaxed"
           >
-            Enterprise-grade security strategy for organizations where a breach
+            Enterprise-grade security strategy for organisations where a breach
             isn&apos;t just costly — it&apos;s{" "}
             <span className="font-bold text-secondary">
               {"catastrophic".split("").map((char, i) => (
@@ -126,13 +113,13 @@ export default function Hero() {
             .
           </motion.p>
 
-          {/* CTA (stack on mobile, row on desktop) */}
+          {/* CTAs */}
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-start">
             <motion.button
               onClick={onScroll("contact")}
               whileHover={{ scale: 1.03, y: -2 }}
               whileTap={{ scale: 0.98 }}
-              className="relative inline-flex items-center justify-center px-8 py-4 text-sm font-black tracking-wider text-secondary overflow-hidden group w-full sm:w-auto"
+              className="relative inline-flex items-center justify-center px-8 py-4 text-sm font-medium tracking-wider text-secondary overflow-hidden group w-full sm:w-auto"
             >
               <motion.span
                 className="absolute bottom-0 left-0 h-0.5 w-full bg-secondary"
@@ -150,7 +137,7 @@ export default function Hero() {
               onClick={onScroll("services")}
               whileHover={{ scale: 1.03, y: -2 }}
               whileTap={{ scale: 0.98 }}
-              className="relative inline-flex items-center justify-center px-8 py-4 text-sm font-black tracking-wider text-secondary overflow-hidden group w-full sm:w-auto"
+              className="relative inline-flex items-center justify-center px-8 py-4 text-sm font-medium tracking-wider text-secondary overflow-hidden group w-full sm:w-auto"
             >
               <motion.span
                 className="absolute bottom-0 left-0 h-0.5 w-full bg-secondary"
@@ -165,7 +152,7 @@ export default function Hero() {
             </motion.button>
           </div>
 
-          {/* Stats (stack on mobile, 3 cols on md) */}
+          {/* Stats */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-10 sm:mt-12">
             {[
               { number: "99.9%", label: "Uptime Guarantee" },
@@ -179,7 +166,7 @@ export default function Hero() {
                 transition={{ delay: 1.0 + i * 0.12 }}
                 className="border-l-2 border-secondary/40 pl-4"
               >
-                <div className="text-2xl md:text-3xl font-black text-secondary">
+                <div className="text-2xl md:text-3xl font-normal text-secondary">
                   {stat.number}
                 </div>
                 <div className="text-xs md:text-sm text-secondary/70">
@@ -191,16 +178,7 @@ export default function Hero() {
         </motion.div>
       </div>
 
-      {/* Scroll indicator (hide on very small screens) */}
-      <motion.div
-        className="hidden sm:block absolute bottom-8 left-1/2 -translate-x-1/2 z-10"
-        animate={{ y: [0, 10, 0] }}
-        transition={{ duration: 2, repeat: Infinity }}
-      >
-        <div className="w-5 h-8 border-2 border-secondary-30 rounded-lg flex justify-center pt-2">
-          <div className="w-1 h-2 bg-secondary-50 rounded-sm" />
-        </div>
-      </motion.div>
+     
     </section>
   );
 }

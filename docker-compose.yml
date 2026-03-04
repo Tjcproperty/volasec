@@ -1,0 +1,27 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+    working_dir: /workspace
+    environment:
+      NODE_ENV: development
+      CHOKIDAR_USEPOLLING: "true"
+      DISABLE_CLOUDFLARE_PLUGIN: "true"
+      RESEND_API_KEY: "re_V75vLcmW_52aokHatnsCapMAb6qCqz6Js"
+      VOLASEC_CONTACT_TO: "services@volasec.com"
+      VITE_VOLASEC_CAL_URL: "https://cal.com/volasec/chat"
+      VITE_CAL_LINK_30MIN: "volasec/chat"
+      VITE_CAL_LINK_60MIN: "volasec/strategy"
+      VITE_CAL_LINK_120MIN: "volasec/comprehensive"
+      VITE_CAL_LINK_DEMO: "volasec/demo"
+    volumes:
+      - .:/workspace
+      - node_modules:/workspace/node_modules
+    ports:
+      - "3001:3000"
+    restart: unless-stopped
+
+volumes:
+  node_modules:

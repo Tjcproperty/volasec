@@ -1,0 +1,137 @@
+#!/usr/bin/env bash
+#
+# magnum - manage the local Magnum development stack
+#
+# Usage: magnum {start|stop|restart|exec|logs|lint|build|help} [args]
+
+set -euo pipefail
+IFS=$'\n\t'
+
+info()  { printf '[info] %s\n' "$*"; }
+warn()  { printf '[warn] %s\n' "$*" >&2; }
+error() { printf '[error] %s\n' "$*" >&2; }
+die()   { error "$*"; exit 1; }
+
+print_help() {
+  cat <<'EOF'
+magnum - manage the local Magnum development stack
+
+Usage:
+  magnum <command> [options]
+
+Commands:
+  start                Build and start the frontend container
+  stop                 Stop the stack
+  restart              Stop, rebuild, and start the stack
+  exec [cmd]           Execute a shell or command inside the frontend container
+  logs [-f]            Tail or show frontend logs
+  lint                 Run ESLint inside the container
+  build                Production build (nginx runtime stage)
+  help                 Show this help message
+
+Use "magnum <command> --help" for command-specific options where supported.
+EOF
+}
+
+detect_dc() {
+  if command -v docker-compose &>/dev/null; then
+    echo "docker-compose"
+  elif command -v docker &>/dev/null && docker compose version &>/dev/null; then
+    echo "docker compose"
+  else
+    die "Neither 'docker-compose' nor 'docker compose' found in PATH"
+  fi
+}
+
+find_root() {
+  local dir="$1"
+  while [[ "$dir" != "/" ]]; do
+    if [[ -f "$dir/docker-compose.yml" ]]; then
+      echo "$dir"
+      return 0
+    fi
+    dir="$(dirname "$dir")"
+  done
+  return 1
+}
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+ROOT="$(find_root "$PWD" || find_root "$SCRIPT_ROOT" || die "Could not find docker-compose.yml in $PWD, $SCRIPT_ROOT, or any parent directory")"
+DC="$(detect_dc)"
+FILE="$ROOT/docker-compose.yml"
+
+cmd="${1:-help}"
+shift || true
+
+case "$cmd" in
+  start)
+    info "Starting frontend..."
+    $DC -f "$FILE" up -d --build frontend
+    ;;
+
+  stop)
+    info "Stopping services..."
+    $DC -f "$FILE" down
+    ;;
+
+  restart)
+    info "Restarting services..."
+    $DC -f "$FILE" down
+    $DC -f "$FILE" up -d --build frontend
+    ;;
+
+  exec)
+    if [[ $# -eq 0 ]]; then
+      $DC -f "$FILE" exec -it frontend sh
+    else
+      $DC -f "$FILE" exec -T frontend "$@"
+    fi
+    ;;
+
+  logs)
+    follow=false
+
+    while [[ $# -gt 0 ]]; do
+      case "$1" in
+        -f|--follow)
+          follow=true
+          ;;
+        --help|-h)
+          info "Usage: magnum logs [-f]"
+          exit 0
+          ;;
+        *)
+          die "Unknown option for logs: $1"
+          ;;
+      esac
+      shift
+    done
+
+    if $follow; then
+      $DC -f "$FILE" logs -f frontend
+    else
+      $DC -f "$FILE" logs frontend
+    fi
+    ;;
+
+  lint)
+    info "Running ESLint..."
+    $DC -f "$FILE" exec -T frontend npx eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0
+    ;;
+
+  build)
+    info "Building production image..."
+    $DC -f "$FILE" build --no-cache --target runtime frontend 2>/dev/null \
+      || docker build -f "$ROOT/Dockerfile" --target runtime -t magnum-runtime "$ROOT"
+    info "Production build complete"
+    ;;
+
+  help|--help|-h|"")
+    print_help
+    ;;
+
+  *)
+    die "Unknown command: $cmd (use 'magnum help' to list commands)"
+    ;;
+esac

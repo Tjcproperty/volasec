@@ -1,273 +1,263 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
+import SectionBadge from "./shared/SectionBadge";
+
+const testimonials = [
+  {
+    quote:
+      "They didn't just check boxes—they built a security program that actually works for how we operate.",
+    name: "Jennifer Park",
+    title: "CTO, Healthcare Technology",
+    accent: "bg-primary",
+  },
+  {
+    quote:
+      "The team identified critical gaps we didn't even know existed. Their pragmatic approach meant we could fix real risks without slowing down development.",
+    name: "David Okonkwo",
+    title: "CISO, Financial Services",
+    accent: "bg-primary-80",
+  },
+  {
+    quote:
+      "Volasec shortened our compliance timeline by months. The roadmap they delivered was specific, actionable and immediately defensible to our board.",
+    name: "Sarah Kim",
+    title: "VP Engineering, Fintech",
+    accent: "bg-primary-50",
+  },
+  {
+    quote:
+      "We came in post-breach with zero confidence. They rebuilt everything with rigour and transparency. Eighteen months on — not a single incident.",
+    name: "Marcus Elliot",
+    title: "CEO, SaaS Platform",
+    accent: "bg-primary",
+  },
+];
+
+function cx(...c) {
+  return c.filter(Boolean).join(" ");
+}
+
+const ease = [0.22, 1, 0.36, 1];
 
 export default function Testimonial() {
-  function cx(...c) {
-    return c.filter(Boolean).join(" ");
-  }
-
-  const ease = [0.22, 1, 0.36, 1];
-
-  const testimonials = [
-    {
-      quote:
-        "They didn't just check boxes—they built a security program that actually works for how we operate.",
-      name: "Jennifer Park",
-      title: "CTO, Healthcare Technology",
-      rail: "bg-primary",
-    },
-    {
-      quote:
-        "The team identified critical gaps we didn't even know existed. Their pragmatic approach meant we could fix real risks without slowing down development.",
-      name: "David Okonkwo",
-      title: "CISO, Financial Services",
-      rail: "bg-primary-80",
-    },
-    {
-      quote:
-        "The team identified critical gaps we didn't even know existed. Their pragmatic approach meant we could fix real risks without slowing down development.",
-      name: "David Okonkwo",
-      title: "CISO, Financial Services",
-      rail: "bg-primary-80",
-    },
-    {
-      quote:
-        "The team identified critical gaps we didn't even know existed. Their pragmatic approach meant we could fix real risks without slowing down development.",
-      name: "David Okonkwo",
-      title: "CISO, Financial Services",
-      rail: "bg-primary-80",
-    },
-  ];
-
-  const cardIn = (dir = 1) => ({
-    hidden: { opacity: 0, x: 28 * dir, y: 10 },
-    show: {
-      opacity: 1,
-      x: 0,
-      y: 0,
-      transition: { duration: 0.7, ease },
-    },
-  });
-
   const trackRef = useRef(null);
+  const [activeIndex, setActiveIndex] = useState(0);
   const [canPrev, setCanPrev] = useState(false);
-  const [canNext, setCanNext] = useState(false);
+  const [canNext, setCanNext] = useState(true);
+  const drag = useRef({ down: false, x: 0, left: 0, moved: false });
 
-  const updateNavState = () => {
+  /* ── Sync active dot with scroll position ── */
+  const updateState = useCallback(() => {
     const el = trackRef.current;
     if (!el) return;
     const max = el.scrollWidth - el.clientWidth;
     setCanPrev(el.scrollLeft > 4);
     setCanNext(el.scrollLeft < max - 4);
-  };
 
-  useEffect(() => {
-    updateNavState();
-    const el = trackRef.current;
-    if (!el) return;
-
-    const onScroll = () => updateNavState();
-    el.addEventListener("scroll", onScroll, { passive: true });
-
-    const onResize = () => updateNavState();
-    window.addEventListener("resize", onResize);
-
-    return () => {
-      el.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onResize);
-    };
+    // Estimate active card
+    const cardWidth =
+      el.querySelector("[data-card]")?.getBoundingClientRect().width ?? 340;
+    const gap = 24;
+    const idx = Math.round(el.scrollLeft / (cardWidth + gap));
+    setActiveIndex(Math.max(0, Math.min(idx, testimonials.length - 1)));
   }, []);
 
-  const scrollByCard = (dir = 1) => {
+  useEffect(() => {
     const el = trackRef.current;
     if (!el) return;
+    updateState();
+    el.addEventListener("scroll", updateState, { passive: true });
+    window.addEventListener("resize", updateState);
+    return () => {
+      el.removeEventListener("scroll", updateState);
+      window.removeEventListener("resize", updateState);
+    };
+  }, [updateState]);
 
-    // use first child width + gap (more accurate)
-    const firstCard = el.querySelector("[data-card='1']");
-    const cardW = firstCard ? firstCard.getBoundingClientRect().width : 320;
-
-    // detect gap from computed style if possible
-    const row = el.querySelector("[data-row='1']");
-    let gap = 20;
-    if (row) {
-      const cs = window.getComputedStyle(row);
-      const g = parseFloat(cs.columnGap || cs.gap || "20");
-      if (!Number.isNaN(g)) gap = g;
-    }
-
-    el.scrollBy({ left: (cardW + gap) * dir, behavior: "smooth" });
+  const scrollTo = (dir) => {
+    const el = trackRef.current;
+    if (!el) return;
+    const cardEl = el.querySelector("[data-card]");
+    const cardW = cardEl ? cardEl.getBoundingClientRect().width : 340;
+    el.scrollBy({ left: (cardW + 24) * dir, behavior: "smooth" });
   };
 
-  // ✅ Mouse drag scroll (desktop + mobile)
-  const drag = useRef({
-    down: false,
-    x: 0,
-    left: 0,
-  });
+  const scrollToIndex = (i) => {
+    const el = trackRef.current;
+    if (!el) return;
+    const cardEl = el.querySelector("[data-card]");
+    const cardW = cardEl ? cardEl.getBoundingClientRect().width : 340;
+    el.scrollTo({ left: i * (cardW + 24), behavior: "smooth" });
+  };
 
+  /* ── Drag to scroll ── */
   const onPointerDown = (e) => {
     const el = trackRef.current;
     if (!el) return;
-    drag.current.down = true;
-    drag.current.x = e.clientX;
-    drag.current.left = el.scrollLeft;
+    drag.current = {
+      down: true,
+      x: e.clientX,
+      left: el.scrollLeft,
+      moved: false,
+    };
     el.setPointerCapture?.(e.pointerId);
-    el.classList.add("cursor-grabbing");
   };
-
   const onPointerMove = (e) => {
     const el = trackRef.current;
     if (!el || !drag.current.down) return;
     const dx = e.clientX - drag.current.x;
+    if (Math.abs(dx) > 4) drag.current.moved = true;
     el.scrollLeft = drag.current.left - dx;
   };
-
   const onPointerUp = (e) => {
-    const el = trackRef.current;
     drag.current.down = false;
-    el?.classList.remove("cursor-grabbing");
-    el?.releasePointerCapture?.(e.pointerId);
-    updateNavState();
+    trackRef.current?.releasePointerCapture?.(e.pointerId);
+    updateState();
   };
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 18 }}
+      initial={{ opacity: 0, y: 14 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.25 }}
-      transition={{ duration: 0.65, ease }}
-      className="border-t border-primary-30 pt-10 md:px-4 "
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.6, ease }}
+      className="border-t border-primary-30 pt-10 px-4 max-w-7xl mx-auto"
     >
-      <div className="mb-6 sm:mb-8 flex items-end justify-between gap-6">
-        <h3 className="text-xl sm:text-2xl font-black text-secondary">
-          CLIENT <span className="text-primary">TESTIMONIALS</span>
-        </h3>
-        <div className="hidden sm:block h-px flex-1 bg-primary-30/60" />
+      {/* ── Header row ── */}
+      <div className="mb-7 flex items-center justify-between gap-6">
+        <SectionBadge
+          label="CLIENT'S TESTIMONIAL"
+          className="mb-6 text-primary-50 border-dark-30"
+        />
+
+        {/* Nav arrows */}
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            aria-label="Previous"
+            onClick={() => scrollTo(-1)}
+            disabled={!canPrev}
+            className={cx(
+              "w-8 h-8 flex items-center justify-center border border-primary-30 text-secondary transition-all duration-200 text-lg leading-none",
+              canPrev
+                ? "hover:border-primary hover:text-primary opacity-100"
+                : "opacity-25 cursor-not-allowed",
+            )}
+          >
+            ‹
+          </button>
+          <button
+            type="button"
+            aria-label="Next"
+            onClick={() => scrollTo(1)}
+            disabled={!canNext}
+            className={cx(
+              "w-8 h-8 flex items-center justify-center border border-primary-30 text-secondary transition-all duration-200 text-lg leading-none",
+              canNext
+                ? "hover:border-primary hover:text-primary opacity-100"
+                : "opacity-25 cursor-not-allowed",
+            )}
+          >
+            ›
+          </button>
+        </div>
       </div>
 
+      {/* ── Scroller ── */}
       <div className="relative">
-        {/* ✅ Buttons now work on BOTH mobile + desktop */}
-        <button
-          type="button"
-          aria-label="Previous testimonial"
-          onClick={() => scrollByCard(-1)}
-          disabled={!canPrev}
+        {/* Left fade */}
+        <div
           className={cx(
-            "absolute left-0 top-1/2 -translate-y-1/2 z-10",
-            "h-10 w-10",
-            "border border-primary-30 bg-secondary-80/90 text-dark",
-            "transition-opacity",
-            canPrev ? "opacity-100" : "opacity-30 cursor-not-allowed",
+            "pointer-events-none absolute left-0 top-0 bottom-0 w-8 z-10 transition-opacity duration-300",
+            "bg-gradient-to-r from-dark to-transparent",
+            canPrev ? "opacity-100" : "opacity-0",
           )}
-        >
-          ‹
-        </button>
-
-        <button
-          type="button"
-          aria-label="Next testimonial"
-          onClick={() => scrollByCard(1)}
-          disabled={!canNext}
+        />
+        {/* Right fade */}
+        <div
           className={cx(
-            "absolute right-0 top-1/2 -translate-y-1/2 z-10",
-            "h-10 w-10",
-            "border border-primary-30 bg-secondary-80/90 text-dark",
-            "transition-opacity",
-            canNext ? "opacity-100" : "opacity-30 cursor-not-allowed",
+            "pointer-events-none absolute right-0 top-0 bottom-0 w-16 z-10 transition-opacity duration-300",
+            "bg-gradient-to-l from-dark to-transparent",
+            canNext ? "opacity-100" : "opacity-0",
           )}
-        >
-          ›
-        </button>
+        />
 
         <div
           ref={trackRef}
-          className={cx(
-            "overflow-x-auto overflow-y-visible",
-            "scroll-smooth",
-            "snap-x snap-mandatory",
-            "[-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
-            // ✅ room so arrows don’t cover content
-            "px-12 md:px-12",
-            // ✅ make it obvious you can drag
-            "cursor-grab select-none",
-          )}
+          className="overflow-x-auto overflow-y-visible scroll-smooth snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden cursor-grab active:cursor-grabbing select-none"
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}
           onPointerCancel={onPointerUp}
           onPointerLeave={onPointerUp}
         >
-          <div
-            data-row="1"
-            className={cx(
-              "flex gap-5 sm:gap-8",
-              // ✅ Desktop peek
-              "md:pr-24 lg:pr-32",
-            )}
-          >
-            {testimonials.map((t, i) => {
-              const dir = i === 0 ? -1 : 1;
+          <div className="flex gap-6 pb-2">
+            {testimonials.map((t, i) => (
+              <motion.div
+                key={i}
+                data-card={i === 0 ? "true" : undefined}
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ duration: 0.55, delay: i * 0.08, ease }}
+                className={cx(
+                  "relative shrink-0 snap-start overflow-hidden",
+                  "border border-primary-30 bg-secondary",
+                  "hover:border-primary-50 transition-colors duration-300",
+                  // Mobile: near full width; tablet: ~50%; desktop: ~33%
+                  "w-[85vw] sm:w-[45%] lg:w-[31%]",
+                )}
+              >
+                {/* Accent rail */}
+                <div
+                  className={cx("absolute left-0 top-0 bottom-0 w-1", t.accent)}
+                />
 
-              return (
-                <motion.div
-                  key={i}
-                  data-card={i === 0 ? "1" : undefined}
-                  variants={cardIn(dir)}
-                  initial="hidden"
-                  whileInView="show"
-                  viewport={{ once: true, amount: 0.3 }}
-                  whileHover={{ y: -3 }}
-                  transition={{ duration: 0.35, ease }}
-                  className={cx(
-                    "group relative overflow-hidden",
-                    "rounded-xl",
-                    "border border-primary-30",
-                    "bg-secondary-80/90 text-dark-80",
-                    "p-5 sm:p-6",
-                    "shadow-[0_14px_40px_rgba(14,26,43,0.14)]",
-                    "transition-colors duration-300",
-                    "hover:bg-secondary-80 hover:border-primary-50",
-                    "snap-start shrink-0",
+                <div className="pl-6 pr-5 py-6">
+                  {/* Quote mark */}
+                  <span className="block text-3xl font-black text-primary/20 leading-none mb-2 select-none">
+                    "
+                  </span>
 
-                    // ✅ Mobile smaller
-                    "w-[130%] ",
+                  <p className="text-xs sm:text-[13px] text-dark/75 font-light leading-relaxed mb-5">
+                    {t.quote}
+                  </p>
 
-                    // ✅ Desktop: 2 full cards + peek
-                    "md:w-[46%] lg:w-[44%]",
-                  )}
-                >
-                  <div
-                    className={cx(
-                      "absolute left-0 top-0 h-full w-1 opacity-70",
-                      t.rail,
-                    )}
-                  />
-
-                  <div className="relative pl-3">
-                    <p className="text-sm sm:text-base text-dark/80 italic font-light leading-relaxed">
-                      “{t.quote}”
-                    </p>
-
-                    <div className="mt-4 flex items-center gap-3">
-                      <div className="h-10 w-10 border border-primary-30 bg-dark flex items-center justify-center font-black text-secondary">
-                        {t.name.charAt(0)}
-                      </div>
-
-                      <div className="leading-tight">
-                        <p className="text-sm font-black text-dark">{t.name}</p>
-                        <p className="text-xs text-dark/60 font-light">
-                          {t.title}
-                        </p>
-                      </div>
+                  <div className="flex items-center gap-3 pt-4 border-t border-primary-30/50">
+                    <div className="w-8 h-8 bg-dark flex items-center justify-center text-xs font-black text-secondary shrink-0">
+                      {t.name.charAt(0)}
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-dark leading-tight">
+                        {t.name}
+                      </p>
+                      <p className="text-[10px] text-dark/50 font-light">
+                        {t.title}
+                      </p>
                     </div>
                   </div>
-                </motion.div>
-              );
-            })}
+                </div>
+              </motion.div>
+            ))}
           </div>
         </div>
+      </div>
 
-        <div className="hidden md:block mt-3 h-px w-full bg-primary-30/60" />
+      {/* ── Dot indicators ── */}
+      <div className="mt-5 flex items-center gap-1.5">
+        {testimonials.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => scrollToIndex(i)}
+            aria-label={`Go to testimonial ${i + 1}`}
+            className={cx(
+              "transition-all duration-300",
+              i === activeIndex
+                ? "w-6 h-1 bg-primary"
+                : "w-1.5 h-1 bg-secondary-30 hover:bg-secondary-50",
+            )}
+          />
+        ))}
       </div>
     </motion.div>
   );

@@ -1,9 +1,18 @@
-import React from "react";
 import { motion } from "framer-motion";
+import SectionBadge from "./shared/SectionBadge";
+import BlurRevealHeading from "./shared/BlurRevealHeading";
 
-function About() {
+export default function About() {
   return (
-    <section id="about" className="py-24 bg-dark section relative">
+    <section id="about" className="py-24 md:py-32 bg-dark section relative border-b border-primary-30">
+      {/* Grain texture */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.02]"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+        }}
+      />
+
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid md:grid-cols-2 gap-16 items-center">
           <motion.div
@@ -11,41 +20,22 @@ function About() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="
-            order-2 md:order-1 
-    relative
-rounded-2xl
-    bg-secondary/90
-    backdrop-blur-sm
-    p-8 sm:p-10
-    border border-secondary-30
-  "
+            className="order-2 md:order-1 relative bg-secondary/90 backdrop-blur-sm p-8 sm:p-10 border rounded-md border-secondary-30"
           >
-            {/* subtle top accent */}
-            {/* <div className="absolute -top-px left-8 h-px w-20 bg-primary" /> */}
+            <SectionBadge label="Who We Are" className="mb-6 text-dark-80" />
 
-            <motion.div
-              initial={{ width: 0 }}
-              whileInView={{ width: "80px" }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="h-0.5  mb-6"
+            <BlurRevealHeading
+              text="We're Not a Traditional Security Consultancy"
+              as="h2"
+              className="text-3xl md:text-4xl font-normal mb-6 tracking-tight text-dark"
             />
-
-            <h2 className="text-4xl md:text-5xl font-black mb-6 tracking-tight text-dark">
-              WHO WE <span className="text-primary">ARE</span>
-            </h2>
-
-            <p className="text-lg md:text-xl font-medium mb-4 leading-relaxed text-dark">
-              We're not a traditional security consultancy.
-            </p>
 
             <p className="text-base font-light mb-10 leading-relaxed text-dark-80 max-w-xl">
               We're former CISOs, security engineers, and cloud architects
               who've built and defended systems at enterprise scale.
             </p>
 
-            {/* stats */}
+            {/* Stats */}
             <div className="space-y-6">
               {[
                 { stat: "50+", label: "Cloud Security Implementations" },
@@ -62,31 +52,30 @@ rounded-2xl
                   className="group"
                 >
                   <div className="flex items-baseline gap-4">
-                    <span className="text-3xl font-black text-primary">
+                    <span className="text-3xl font-normal text-primary">
                       {item.stat}
                     </span>
                     <span className="text-sm font-medium text-dark-80">
                       {item.label}
                     </span>
                   </div>
-
                   <div className="h-px mt-3 bg-primary-30" />
                 </motion.div>
               ))}
             </div>
           </motion.div>
 
-          {/* ✅ VIDEO SIDE */}
+          {/* Video side */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
             whileHover={{ scale: 1.02, rotateY: 5 }}
-            className="relative h-[420px] rounded-xl sm:h-[520px] md:h-[600px] overflow-hidden bg-transparent order-1 md:order-2"
-            style={{ perspective: 1000 }} // makes rotateY feel nicer
+            
+            className="relative h-[520px] rounded-md md:h-[620px] overflow-hidden bg-transparent order-1 md:order-2"
+            style={{ perspective: 1000 }}
           >
-            {/* Optional soft glow (keeps background transparent) */}
             <div className="pointer-events-none absolute -top-16 right-0 h-72 w-72 bg-primary-30 blur-[140px] opacity-20" />
 
             <video
@@ -97,11 +86,9 @@ rounded-2xl
               preload="metadata"
               className="absolute inset-0 h-full w-full object-cover bg-transparent"
             >
-              {/* ✅ replace with your real file path */}
               <source src="/seam.mp4" type="video/mp4" />
             </video>
 
-            {/* Optional subtle overlay to blend video into dark section */}
             <div className="pointer-events-none absolute inset-0 bg-dark-80/30" />
           </motion.div>
         </div>
@@ -109,5 +96,3 @@ rounded-2xl
     </section>
   );
 }
-
-export default About;

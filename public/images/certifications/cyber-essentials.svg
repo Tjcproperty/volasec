@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <defs>
+    <linearGradient id="ceGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#2c3e8f;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1a2560;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- Shield shape -->
+  <path d="M100 10 L180 45 L180 110 C180 150 145 180 100 195 C55 180 20 150 20 110 L20 45 Z" fill="url(#ceGrad)" stroke="#111a40" stroke-width="2"/>
+  <!-- Inner shield highlight -->
+  <path d="M100 22 L170 52 L170 110 C170 145 140 172 100 185 C60 172 30 145 30 110 L30 52 Z" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+  <!-- Lock icon -->
+  <rect x="82" y="78" width="36" height="28" rx="4" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.7)" stroke-width="2"/>
+  <path d="M88 78 L88 68 C88 58 94 52 100 52 C106 52 112 58 112 68 L112 78" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="100" cy="92" r="4" fill="white"/>
+  <line x1="100" y1="95" x2="100" y2="100" stroke="white" stroke-width="2" stroke-linecap="round"/>
+  <!-- Text -->
+  <text x="100" y="132" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="bold" fill="white" letter-spacing="1">CYBER</text>
+  <text x="100" y="148" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="bold" fill="white" letter-spacing="1">ESSENTIALS</text>
+  <text x="100" y="165" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="9" fill="rgba(255,255,255,0.7)">CERTIFIED</text>
+</svg>

@@ -6,6 +6,15 @@ export default {
       fontFamily: {
         sans: ["Archivo Expanded", "sans-serif"],
       },
+      animation: {
+        marquee: "marquee var(--marquee-duration, 30s) linear infinite",
+      },
+      keyframes: {
+        marquee: {
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(-50%)" },
+        },
+      },
       colors: {
         // Steel Blue - Core Colour (Primary)
         primary: {

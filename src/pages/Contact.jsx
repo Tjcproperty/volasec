@@ -1,10 +1,20 @@
-function Contact() {
+import { Helmet } from "react-helmet-async";
+import ContactSection from "@/components/shared/ContactSection";
+
+export default function ContactPage() {
   return (
-    <div className="min-h-screen bg-dark p-8">
-      <h1 className="text-4xl font-bold text-dark-foreground">Contact Page</h1>
-      <p className="mt-4 text-secondary">Get in touch with us</p>
-    </div>
+    <>
+      <Helmet>
+        <title>Contact — Volasec</title>
+        <meta
+          name="description"
+          content="Book a strategy call or send us a message. Cloud security architecture for high-stakes environments."
+        />
+      </Helmet>
+
+      <div className="pt-20">
+        <ContactSection />
+      </div>
+    </>
   );
 }
-
-export default Contact;
